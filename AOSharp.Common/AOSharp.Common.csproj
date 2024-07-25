@@ -135,6 +135,8 @@
     <Compile Include="SmokeLounge\AOtomation\Messaging\GameData\TowerInfoPacket.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\GameData\MarketSendSlot.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\GameData\VendingMachineSlot.cs" />
+    <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\FriendRemoveMessage.cs" />
+    <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\FriendStatusMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\LookupMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\ChatLoginOKMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\ChatLoginErrorMessage.cs" />
@@ -318,6 +320,7 @@
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\ArraySizeSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\ByteSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\BoolSerializer.cs" />
+    <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\Custom\FriendStatusSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\Custom\LookupMessageSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\Custom\InspectSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\Custom\PlayfieldTowerUpdateSerializer.cs" />

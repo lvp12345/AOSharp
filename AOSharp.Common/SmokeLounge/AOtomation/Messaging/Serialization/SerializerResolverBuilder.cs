@@ -69,7 +69,7 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization
             //this.serializers.TryAdd(typeof(GenericCmdMessage), new GenericCmdSerializer());
             this.serializers.TryAdd(typeof(GroupMsgMessage), new GroupMessageSerializer());
             this.serializers.TryAdd(typeof(PlayfieldTowerUpdateClientMessage), new PlayfieldTowerUpdateClientSerializer());
-            this.serializers.TryAdd(typeof(InspectMessage), new InspectSerializer());
+            this.serializers.TryAdd(typeof(LookupMessage), new LookupMessageSerializer());
         }
 
         #endregion

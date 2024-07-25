@@ -18,7 +18,10 @@
 
         #endregion
 
-        [AoMember(0, SerializeSize = ArraySizeType.Int16)]
+        [AoMember(0)]
+        public uint Id { get; set; }
+
+        [AoMember(1, SerializeSize = ArraySizeType.Int16)]
         public string Name { get; set; }
     }
 }

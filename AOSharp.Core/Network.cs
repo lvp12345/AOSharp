@@ -55,6 +55,16 @@ namespace AOSharp.Core
             Send(packet);
         }
 
+        public static void Send(ChatMessageBody message)
+        {
+            byte[] packet = ChatPacketFactory.Create(message);
+
+            if (packet == null)
+                return;
+
+            SendChat(packet);
+        }
+
         public static unsafe void Send(byte[] payload)
         {
             IntPtr pClient = Client_t.GetInstanceIfAny();
@@ -68,6 +78,23 @@ namespace AOSharp.Core
                 return;
 
             Connection_t.Send(pConnection, 0, payload.Length, payload);
+        }
+
+        public static unsafe void SendChat(byte[] payload)
+        {
+            IntPtr pChatServerInterface = *(IntPtr*)(Kernel32.GetProcAddress(Kernel32.GetModuleHandle("GUI.dll"), "?s_pcInstance@ChatGUIModule_c@@0PAV1@A") + 0x18);
+
+            if (pChatServerInterface == IntPtr.Zero)
+                return;
+            
+            IntPtr pChatServerUnk = *(IntPtr*)(pChatServerInterface + 0x30);
+
+            if (pChatServerUnk == IntPtr.Zero)
+                return;
+
+            int chatSocket = *(int*)(pChatServerUnk + 0x78);
+
+            Ws2_32.send(chatSocket, Marshal.UnsafeAddrOfPinnedArrayElement(payload, 0), payload.Length, 0);
         }
 
         internal static void Update()

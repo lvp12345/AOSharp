@@ -135,6 +135,7 @@
     <Compile Include="SmokeLounge\AOtomation\Messaging\GameData\TowerInfoPacket.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\GameData\MarketSendSlot.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\GameData\VendingMachineSlot.cs" />
+    <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\LookupMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\ChatLoginOKMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\ChatLoginErrorMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\ChatCharacterListMessage.cs" />

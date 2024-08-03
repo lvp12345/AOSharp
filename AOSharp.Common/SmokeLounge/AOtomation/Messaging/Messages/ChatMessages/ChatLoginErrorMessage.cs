@@ -17,5 +17,8 @@
         }
 
         #endregion
+
+        [AoMember(0, SerializeSize = ArraySizeType.Int16)]
+        public string Message { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using AOSharp.Common.GameData;
 using AOSharp.Common.Unmanaged.Imports;
 using AOSharp.Core.GameData;
+using AOSharp.Core.Inventory;
 
 namespace AOSharp.Core.UI
 {
@@ -32,6 +33,13 @@ namespace AOSharp.Core.UI
         {
             ((MemStruct*)Pointer)->HasIcon = true;
             ((MemStruct*)Pointer)->IconId = iconId;
+        }
+
+        public unsafe bool GetDummyItem(out DummyItem dummyItem)
+        {
+            Identity dummyItemId = *(Identity*)(*(IntPtr*)(Pointer + 0x2C));
+
+            return DummyItem.TryGet(dummyItemId, out dummyItem);
         }
 
         [StructLayout(LayoutKind.Explicit, Pack = 0)]

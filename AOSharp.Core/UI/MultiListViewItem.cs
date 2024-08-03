@@ -8,7 +8,7 @@ namespace AOSharp.Core.UI
     public class MultiListViewItem
     {
         protected readonly IntPtr _pointer;
-
+        public object Tag;
         public bool IsSelected => MultiListViewItem_c.IsSelected(_pointer);
 
         public IntPtr Pointer

@@ -17,6 +17,8 @@ namespace AOSharp.Core.UI
         //TODO: Instantiate with current list
         public List<MultiListViewItem> Items = new List<MultiListViewItem>();
 
+        public bool HasSelection => MultiListView_c.GetSelectedItem(_pointer) != IntPtr.Zero;
+
         public EventHandler<bool> ItemSelectionStateChanged;
 
         protected MultiListView(IntPtr pointer, bool track = false) : base(pointer, track)
@@ -140,12 +142,6 @@ namespace AOSharp.Core.UI
                 return;
 
             ItemSelectionStateChanged?.Invoke(item, selected);
-
-            foreach (MultiListViewItem otherItem in Items.Where(x => x.Pointer != pItem))
-            {
-                otherItem.Select(false);
-                ItemSelectionStateChanged?.Invoke(otherItem, false);
-            }
         }
     }
 }

@@ -98,6 +98,48 @@ namespace AOSharp.Common.GameData
             }
         }
 
+        public Quaternion ToQuaterion()
+        {
+            Quaternion q = new Quaternion();
+            float trace = m00 + m11 + m22;
+            if (trace > 0)
+            {
+                float s = 0.5f / (float)Math.Sqrt(trace + 1.0f);
+                q.W = 0.25f / s;
+                q.X = (m21 - m12) * s;
+                q.Y = (m02 - m20) * s;
+                q.Z = (m10 - m01) * s;
+            }
+            else
+            {
+                if (m00 > m11 && m00 > m22)
+                {
+                    float s = 2.0f * (float)Math.Sqrt(1.0f + m00 - m11 - m22);
+                    q.W = (m21 - m12) / s;
+                    q.X = 0.25f * s;
+                    q.Y = (m01 + m10) / s;
+                    q.Z = (m02 + m20) / s;
+                }
+                else if (m11 > m22)
+                {
+                    float s = 2.0f * (float)Math.Sqrt(1.0f + m11 - m00 - m22);
+                    q.W = (m02 - m20) / s;
+                    q.X = (m01 + m10) / s;
+                    q.Y = 0.25f * s;
+                    q.Z = (m12 + m21) / s;
+                }
+                else
+                {
+                    float s = 2.0f * (float)Math.Sqrt(1.0f + m22 - m00 - m11);
+                    q.W = (m10 - m01) / s;
+                    q.X = (m02 + m20) / s;
+                    q.Y = (m12 + m21) / s;
+                    q.Z = 0.25f * s;
+                }
+            }
+            return q;
+        }
+
         public Vector4 GetColumn(int index)
         {
             switch (index)

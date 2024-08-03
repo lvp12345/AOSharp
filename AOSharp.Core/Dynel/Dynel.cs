@@ -28,6 +28,8 @@ namespace AOSharp.Core
             set => N3Dynel_t.SetRelRot(Pointer, ref value);
         }
 
+        public unsafe Vector3 GlobalPosition => *N3Dynel_t.GetGlobalPos(Pointer);
+
         public unsafe MovementState MovementState
         {
             get => (*(MemStruct*)Pointer).Vehicle->CharMovementStatus->State;
@@ -117,6 +119,16 @@ namespace AOSharp.Core
 
             [FieldOffset(0x50)]
             public Vehicle* Vehicle;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return (obj is Dynel) && Identity.Equals(((Dynel)obj).Identity);
+        }
+
+        public override int GetHashCode()
+        {
+            return Identity.GetHashCode();
         }
     }
 }

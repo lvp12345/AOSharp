@@ -9,6 +9,12 @@ namespace AOSharp.Common.Unmanaged.Imports
         [DllImport("N3.dll", EntryPoint = "??0n3Dynel_t@@IAE@ABVIdentity_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
         public static extern IntPtr Constructor(IntPtr pThis, ref Identity identity);
 
+        [DllImport("N3.dll", EntryPoint = "?GetDynel@n3Dynel_t@@SAPAV1@ABVIdentity_t@@@Z", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr GetDynel(ref Identity identity);
+
+        [DllImport("N3.dll", EntryPoint = "?GetDynelMap@n3Dynel_t@@SAABVDynelMap_t@@XZ", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr GetDynelMap();
+
         [DllImport("N3.dll", EntryPoint = "?SetRelRot@n3Dynel_t@@QAEXABVQuaternion_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
         public static extern void SetRelRot(IntPtr pThis, ref Quaternion rot);
 

@@ -67,6 +67,13 @@ namespace AOSharp.Common.Unmanaged.Interfaces
             N3EngineClientAnarchy_t.DebugSpellListToChat(pEngine, unk, ref identity, spellList);
         }
 
+        public static Identity GetTemplateID(Identity identity)
+        {
+            N3EngineClientAnarchy_t.TemplateIDToDynelID(N3Engine_t.GetInstance(), out Identity dynelId, ref identity);
+
+            return dynelId;
+        }
+
         public static Identity TemplateIDToDynelID(Identity templateId)
         {
             N3EngineClientAnarchy_t.TemplateIDToDynelID(N3Engine_t.GetInstance(), out Identity dynelId, ref templateId);

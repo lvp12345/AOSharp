@@ -262,5 +262,11 @@ namespace AOSharp.Common.Unmanaged.Imports
 
         [DllImport("Gamecode.dll", EntryPoint = "?N3Msg_TemplateIDToDynelID@n3EngineClientAnarchy_t@@QBE?AVIdentity_t@@ABV2@@Z", CallingConvention = CallingConvention.ThisCall)]
         public static extern IntPtr TemplateIDToDynelID(IntPtr pThis, out Identity dynelId, ref Identity templateId);
+
+        [DllImport("Gamecode.dll", EntryPoint = "?N3Msg_GetTemplateID@n3EngineClientAnarchy_t@@QBE?BVIdentity_t@@ABV2@@Z", CallingConvention = CallingConvention.ThisCall)]
+        public static extern IntPtr GetTemplateID(IntPtr pThis, ref Identity templateId);
+
+        [DllImport("Gamecode.dll", EntryPoint = "?N3Msg_UseSkill@n3EngineClientAnarchy_t@@QAEXW4Stat_e@GameData@@ABVIdentity_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
+        public static extern void UseSkill(IntPtr pThis, Stat stat, ref Identity identity);
     }
 }

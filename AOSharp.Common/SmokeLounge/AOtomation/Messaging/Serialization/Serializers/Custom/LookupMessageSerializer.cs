@@ -31,7 +31,7 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization.Serializers.Custom
             var deserializerMethodInfo =
                 ReflectionHelper
                     .GetMethodInfo
-                        <InspectSerializer, Func<StreamReader, SerializationContext, PropertyMetaData, object>>
+                        <LookupMessageSerializer, Func<StreamReader, SerializationContext, PropertyMetaData, object>>
                         (o => o.Deserialize);
             var serializerExp = Expression.New(this.GetType());
             var callExp = Expression.Call(
@@ -62,7 +62,7 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization.Serializers.Custom
             var serializerMethodInfo =
                 ReflectionHelper
                     .GetMethodInfo
-                    <InspectSerializer,
+                    <LookupMessageSerializer,
                         Action<StreamWriter, SerializationContext, object, PropertyMetaData>>(o => o.Serialize);
             var serializerExp = Expression.New(this.GetType());
             var callExp = Expression.Call(

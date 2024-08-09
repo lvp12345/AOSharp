@@ -13,17 +13,31 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using AOSharp.Common.GameData;
+using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
 
 namespace SmokeLounge.AOtomation.Messaging.GameData
 {
     public class InspectSlotInfo
     {
-        public int Unk { get; set; }
+        [AoMember(0)]
         public EquipSlot EquipSlot { get; set; }
-        public int Unk2 { get; set; }
+
+        [AoMember(1)]
+        public int Unk1 { get; set; }
+
+        [AoMember(2)]
         public Identity UniqueIdentity { get; set; }
+
+        [AoMember(3)]
         public int LowId { get; set; }
+
+        [AoMember(4)]
         public int HighId { get; set; }
+
+        [AoMember(5)]
         public int Ql { get; set; }
+
+        [AoMember(6)]
+        public int Unk2 { get; set; }
     }
 }

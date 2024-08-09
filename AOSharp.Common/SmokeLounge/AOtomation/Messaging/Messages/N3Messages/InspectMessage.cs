@@ -36,7 +36,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(0)]
         public Identity Target { get; set; }
 
-        [AoMember(1)]
+        [AoMember(1, SerializeSize = ArraySizeType.X3F1)]
         public InspectSlotInfo[] Slot { get; set; }
 
         #endregion

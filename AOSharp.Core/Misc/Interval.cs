@@ -12,6 +12,7 @@ namespace AOSharp.Core.Misc
         public Interval(int ms)
         {
             _interval = ms / 1000f;
+            Reset();
         }
 
         public void ExecuteIfElapsed(Action action)

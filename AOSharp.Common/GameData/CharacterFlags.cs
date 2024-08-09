@@ -23,6 +23,17 @@ namespace AOSharp.Common.GameData
         Unknown8 = 0x20000000,
     }
 
+    [Flags]
+    public enum DeathFlags
+    {
+        None = 0x00,
+        DeathWhiteScreen = 0x20,
+        Dying1 = 0x30,
+        Dying2 = 0x60,
+        Dying3 = 0x70,
+        Unknown200 = 0x200
+    }
+
     public enum NpcClan
     {
         EngineerAttackPet = 95,

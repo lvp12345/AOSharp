@@ -49,7 +49,7 @@ namespace AOSharp.Core
 
         public bool IsAttacking => (*(MemStruct*)Pointer).WeaponHolder->AttackingState == 0x02;
 
-        public bool IsAlive => Health > 0;
+        public bool IsAlive => Health > 0 && !GetIsDying();
 
         public bool IsInLineOfSight => GamecodeUnk.IsInLineOfSight(DynelManager.LocalPlayer.Pointer, Pointer);
 
@@ -210,12 +210,22 @@ namespace AOSharp.Core
             return N3EngineClientAnarchy_t.IsInTeam(pEngine, &identity);
         }
 
+        private bool GetIsDying()
+        {
+            DeathFlags deathFlags = (*(MemStruct*)Pointer).DeathFlags;
+
+            return deathFlags.HasFlag(DeathFlags.Dying1) || deathFlags.HasFlag(DeathFlags.Dying2) || deathFlags.HasFlag(DeathFlags.Dying3) || deathFlags.HasFlag(DeathFlags.DeathWhiteScreen);
+        }
+
         [StructLayout(LayoutKind.Explicit, Pack = 0)]
         private new struct MemStruct
         {
             [MarshalAs(UnmanagedType.U1)]
             [FieldOffset(0xC9)]
             public bool IsInPlay;
+
+            [FieldOffset(0x138)]
+            public DeathFlags DeathFlags;
 
             [FieldOffset(0x154)]
             public IntPtr Name;

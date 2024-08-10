@@ -64,6 +64,11 @@ namespace AOSharp.Core
             return surface;
         }
 
+        public override string ToString()
+        {
+            return $"{Name} ({Instance})";
+        }
+
         [StructLayout(LayoutKind.Explicit, Pack = 0)]
         private struct MemStruct
         {

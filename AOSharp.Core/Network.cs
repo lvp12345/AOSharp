@@ -18,6 +18,8 @@ namespace AOSharp.Core
     {
         public static EventHandler<byte[]> PacketReceived;
         public static EventHandler<N3Message> N3MessageReceived;
+        public static Action<SystemMessage> SystemMessageReceived;
+        public static Action<PingMessage> PingMessageReceived;
         public static EventHandler<byte[]> PacketSent;
         public static EventHandler<N3Message> N3MessageSent;
         public static EventHandler<ChatMessageBody> ChatMessageReceived;
@@ -107,6 +109,10 @@ namespace AOSharp.Core
                 while (_inboundMessageQueue.TryDequeue(out Message msg))
                     if (msg.Header.PacketType == PacketType.N3Message)
                         OnInboundN3Message((N3Message)msg.Body);
+                    else if (msg.Header.PacketType == PacketType.SystemMessage)
+                        SystemMessageReceived?.Invoke((SystemMessage)msg.Body);
+                    else if (msg.Header.PacketType == PacketType.PingMessage)
+                        PingMessageReceived?.Invoke((PingMessage)msg.Body);
 
                 while (_rawOutboundPacketQueue.TryDequeue(out byte[] packet))
                     PacketSent?.Invoke(null, packet);

@@ -38,6 +38,15 @@ namespace AOSharp.Core
             Inspect?.Invoke(null, new InspectEventArgs { Target = target, Pages = items });
         }
 
+        public static void InfoRequest(Identity identity)
+        {
+            Network.Send(new CharacterActionMessage()
+            {
+                Action = CharacterActionType.InfoRequest,
+                Identity = DynelManager.LocalPlayer.Identity,
+                Target = identity,
+            });
+        }
     }
 
     public class InspectEventArgs

@@ -57,7 +57,7 @@ namespace AOSharp.Core.Inventory
 
         public static List<Item> FindAll(IEnumerable<int> ids)
         {
-            return Items.Where(x => ids.Contains(x.Id)).ToList();
+            return Items.Where(x => ids.Contains(x.Id) || ids.Contains(x.HighId)).ToList();
         }
 
         public static List<Item> FindAll(int lowId, int highId, bool includeEquipped = true)

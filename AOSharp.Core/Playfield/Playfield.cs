@@ -86,6 +86,10 @@ namespace AOSharp.Core
         ///</summary>
         public static int TilemapResourceId => GetTilemapResourceId();
 
+        public static DungeonDirection DungeonDirection => GetDungeonDirection();
+
+        public static int NumFloors => GetNumFloors();
+
         public static IEnumerable<Door> Doors => DynelManager.Doors;
 
         //TODO: Convert to use n3Playfield_t::GetPlayfieldDynels() to remove dependencies on hard-coded offsets
@@ -147,6 +151,35 @@ namespace AOSharp.Core
                 return new List<Room>();
 
             return (*N3Playfield_t.GetZones(pPlayfield)).ToList().Select(x => new Room(x)).ToList();
+        }
+
+        private static DungeonDirection GetDungeonDirection()
+        {
+            if (!IsDungeon)
+                return DungeonDirection.None;
+
+            List<Room> rooms = GetRooms();
+            int firstRoomFloor = rooms.First().Floor;
+            int lastRoomFloor = rooms.Last().Floor;
+
+            if (firstRoomFloor == lastRoomFloor)
+                return DungeonDirection.None;
+            else if (lastRoomFloor > firstRoomFloor)
+                return DungeonDirection.Up;
+            else
+                return DungeonDirection.Down;
+        }
+
+        private static int GetNumFloors()
+        {
+            if (!IsDungeon)
+                return 0;
+
+            List<Room> rooms = GetRooms();
+            int firstRoomFloor = rooms.First().Floor;
+            int lastRoomFloor = rooms.Last().Floor;
+
+            return Math.Abs(firstRoomFloor - lastRoomFloor) + 1;
         }
 
         private static bool AreVehiclesAllowed()

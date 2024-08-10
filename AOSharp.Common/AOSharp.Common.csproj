@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameData\BattlestationSide.cs" />
+    <Compile Include="GameData\DungeonDirection.cs" />
     <Compile Include="GameData\HitType.cs" />
     <Compile Include="GameData\IPoint.cs" />
     <Compile Include="GameData\ItemEnums.cs" />

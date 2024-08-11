@@ -37,8 +37,8 @@
     <Reference Include="cai-nav">
       <HintPath>..\NavmeshMovementController\CritterAi\cai-nav.dll</HintPath>
     </Reference>
-    <Reference Include="JsonKnownTypes, Version=0.5.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\JsonKnownTypes.0.5.5\lib\netstandard2.0\JsonKnownTypes.dll</HintPath>
+    <Reference Include="JsonSubTypes, Version=2.0.1.0, Culture=neutral, PublicKeyToken=ee75fc290dbc1176, processorArchitecture=MSIL">
+      <HintPath>..\packages\JsonSubTypes.2.0.1\lib\net47\JsonSubTypes.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>

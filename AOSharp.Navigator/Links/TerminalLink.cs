@@ -1,10 +1,5 @@
 ﻿using AOSharp.Common.GameData;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AOSharp.Navigator
 {
@@ -19,6 +14,11 @@ namespace AOSharp.Navigator
         {
             TerminalName = terminalName;
             TerminalPos = terminalPos;
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType()} - Dst: {DstId}, Terminal Name: {TerminalName}, Terminal Pos: {TerminalPos}";
         }
     }
 }

@@ -200,12 +200,18 @@ namespace AOSharp.Core
 
         public void Accept()
         {
+            if (Responded)
+                return;
+
             Team.Accept(Requester);
             Responded = true;
         }
 
         public void Decline()
         {
+            if (Responded)
+                return;
+
             Team.Decline(Requester);
             Responded = true;
         }

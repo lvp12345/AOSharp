@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace AOSharp.Common.GameData
 {
@@ -7,6 +8,7 @@ namespace AOSharp.Common.GameData
         public float X;
         public float Y;
 
+        [JsonIgnore]
         public Vector2 YX
         {
             get { return new Vector2(Y, X); }
@@ -49,8 +51,10 @@ namespace AOSharp.Common.GameData
             }
         }
 
+        [JsonIgnore]
         public float Magnitude { get { return Mathf.Sqrt(X * X + Y * Y); } }
 
+        [JsonIgnore]
         public float SqrMagnitude { get { return X * X + Y * Y; } }
 
         public void Set(float newX, float newY) { X = newX; Y = newY; }
@@ -103,6 +107,7 @@ namespace AOSharp.Common.GameData
                 this = Zero;
         }
 
+        [JsonIgnore]
         public Vector2 Normalized
         {
             get

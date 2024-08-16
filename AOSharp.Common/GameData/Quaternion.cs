@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Remoting.Messaging;
+using Newtonsoft.Json;
 using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
 
 namespace AOSharp.Common.GameData
@@ -26,6 +27,7 @@ namespace AOSharp.Common.GameData
    
         private const float degToRad = (Mathf.PI / 180.0f);
 
+        [JsonIgnore]
         public Vector3 XYZ
         {
             set
@@ -80,6 +82,7 @@ namespace AOSharp.Common.GameData
             }
         }
 
+        [JsonIgnore]
         public Vector3 EulerAngles
         {
             get
@@ -92,10 +95,12 @@ namespace AOSharp.Common.GameData
             }
         }
 
+        [JsonIgnore]
         public Vector3 Forward => this * Vector3.Forward;
 
         public static Quaternion Identity => new Quaternion(0, 0, 0, 1f);
 
+        [JsonIgnore]
         public float Magnitude
         {
             get
@@ -103,10 +108,11 @@ namespace AOSharp.Common.GameData
                 return (float)Mathf.Sqrt(X * X + Y * Y + Z * Z + W * W);
             }
         }
-        
+
         /// <summary>
         /// Gets the square of the quaternion length (magnitude).
         /// </summary>
+        [JsonIgnore]
         public float SqrMagnitude
         {
             get
@@ -166,6 +172,7 @@ namespace AOSharp.Common.GameData
             this.W = w;
         }
 
+        [JsonIgnore]
         public float Yaw
         {
             get
@@ -177,11 +184,13 @@ namespace AOSharp.Common.GameData
             }
         }
 
+        [JsonIgnore]
         public float Pitch
         {
             get { return -2 * Mathf.Atan2((2 * X * W) - (2 * Y * Z), 1 - (2 * X * Y) - (2 * Z * Z)); }
         }
 
+        [JsonIgnore]
         public float Roll
         {
             get

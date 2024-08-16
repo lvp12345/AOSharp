@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
 
 namespace AOSharp.Common.GameData
@@ -18,31 +19,37 @@ namespace AOSharp.Common.GameData
         [AoMember(2)]
         public float Z { get; set; }
 
+        [JsonIgnore]
         public Vector2 XY
         {
             get { return new Vector2(X, Y); }
         }
 
+        [JsonIgnore]
         public Vector2 XZ
         {
             get { return new Vector2(X, Z); }
         }
 
+        [JsonIgnore]
         public Vector2 YX
         {
             get { return new Vector2(Y, X); }
         }
 
+        [JsonIgnore]
         public Vector2 YZ
         {
             get { return new Vector2(Y, Z); }
         }
 
+        [JsonIgnore]
         public Vector2 ZX
         {
             get { return new Vector2(Z, X); }
         }
 
+        [JsonIgnore]
         public Vector2 ZY
         {
             get { return new Vector2(Z, Y); }
@@ -74,6 +81,7 @@ namespace AOSharp.Common.GameData
             Z = 0;
         }
 
+        [JsonIgnore]
         public float Magnitude
         {
             get { return Mathf.Sqrt(Mathf.Pow(X, 2) + Mathf.Pow(Y, 2) + Mathf.Pow(Z, 2)); }
@@ -98,6 +106,7 @@ namespace AOSharp.Common.GameData
             }
         }
 
+        [JsonIgnore]
         public float SqrMagnitude { get { return X * X + Y * Y + Z * Z; } }
 
         public static float Angle(Vector3 from, Vector3 to)

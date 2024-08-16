@@ -19,6 +19,7 @@ namespace AOSharp.Core
         internal static IEnumerable<Door> Doors { private set; get; } = new List<Door>();
         public static IEnumerable<SimpleChar> Characters { private set; get; } = new List<SimpleChar>();
         public static IEnumerable<Corpse> Corpses { private set; get; } = new List<Corpse>();
+        public static IEnumerable<SimpleItem> Terminals { private set; get; } = new List<SimpleItem>();
         public static IEnumerable<SimpleChar> NPCs { private set; get; } = new List<SimpleChar>();
         public static IEnumerable<SimpleChar> Players { private set; get; } = new List<SimpleChar>();
 
@@ -33,6 +34,7 @@ namespace AOSharp.Core
                 Doors = AllDynels.Where(x => x.Identity.Type == IdentityType.Door).Select(x => new Door(x));
                 Characters = AllDynels.Where(x => x.Identity.Type == IdentityType.SimpleChar).Select(x => new SimpleChar(x));
                 Corpses = AllDynels.Where(x => x.Identity.Type == IdentityType.Corpse).Select(x => new Corpse(x));
+                Terminals = AllDynels.Where(x => x.Identity.Type == IdentityType.Terminal).Select(x => new SimpleItem(x));
                 NPCs = Characters.Where(x => x.IsNpc && !x.IsPet);
                 Players = Characters.Where(x => x.IsPlayer);
 

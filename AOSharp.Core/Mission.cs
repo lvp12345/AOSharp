@@ -21,6 +21,8 @@ namespace AOSharp.Core
 
         public Identity Source => (*(MissionMemStruct*)Pointer).Source;
 
+        public Identity Playfield => (*(MissionMemStruct*)Pointer).Playfield;
+
         public MissionLocation Location => N3EngineClientAnarchy.GetQuestWorldPos(Identity, out Identity pf, out Vector3 uniPos, out Vector3 pos) ? new MissionLocation(pf, uniPos, pos) : null;
 
         public List<MissionAction> Actions => GetActions();

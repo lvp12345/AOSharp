@@ -8,6 +8,7 @@ namespace AOSharp.Common.GameData
 {
     public enum PlayfieldId
     {
+        None = 0,
         Grid = 152,
         Avalon = 505,
         BrokenCrest = 510,

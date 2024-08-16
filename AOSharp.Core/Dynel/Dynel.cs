@@ -48,6 +48,10 @@ namespace AOSharp.Core
             set => (*(MemStruct*)Pointer).Vehicle->Accel = value;
         }
 
+        public Vector3 Forward => Rotation * Vector3.Forward;
+
+        public Vector3 Right => Rotation * Vector3.Right;
+
         public unsafe float Radius => (*(MemStruct*)Pointer).Vehicle->Radius;
 
         public unsafe bool IsFalling => (*(MemStruct*)Pointer).Vehicle->IsFalling;

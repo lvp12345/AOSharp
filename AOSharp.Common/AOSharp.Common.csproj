@@ -51,6 +51,7 @@
     <Compile Include="GameData\IPoint.cs" />
     <Compile Include="GameData\ItemEnums.cs" />
     <Compile Include="GameData\ChatMessageEnums.cs" />
+    <Compile Include="GameData\Mathf.cs" />
     <Compile Include="GameData\PlayfieldId.cs" />
     <Compile Include="GameData\Vector4.cs" />
     <Compile Include="IPC\IPCChannel.cs" />

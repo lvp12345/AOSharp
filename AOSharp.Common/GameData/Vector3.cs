@@ -4,7 +4,7 @@ using SmokeLounge.AOtomation.Messaging.Serialization.MappingAttributes;
 
 namespace AOSharp.Common.GameData
 {
-    [StructLayout(LayoutKind.Sequential, Size=0xC)]
+    [StructLayout(LayoutKind.Sequential, Size = 0xC)]
     public struct Vector3
     {
         public const float ZeroTolerance = 1e-6f;
@@ -17,6 +17,36 @@ namespace AOSharp.Common.GameData
 
         [AoMember(2)]
         public float Z { get; set; }
+
+        public Vector2 XY
+        {
+            get { return new Vector2(X, Y); }
+        }
+
+        public Vector2 XZ
+        {
+            get { return new Vector2(X, Z); }
+        }
+
+        public Vector2 YX
+        {
+            get { return new Vector2(Y, X); }
+        }
+
+        public Vector2 YZ
+        {
+            get { return new Vector2(Y, Z); }
+        }
+
+        public Vector2 ZX
+        {
+            get { return new Vector2(Z, X); }
+        }
+
+        public Vector2 ZY
+        {
+            get { return new Vector2(Z, Y); }
+        }
 
         public static readonly Vector3 Zero = new Vector3(0, 0, 0);
         public static readonly Vector3 Forward = new Vector3(0, 0, 1);
@@ -44,9 +74,9 @@ namespace AOSharp.Common.GameData
             Z = 0;
         }
 
-        public double Magnitude
+        public float Magnitude
         {
-            get { return Math.Sqrt(Math.Pow(X, 2) + Math.Pow(Y, 2) + Math.Pow(Z, 2)); }
+            get { return Mathf.Sqrt(Mathf.Pow(X, 2) + Mathf.Pow(Y, 2) + Mathf.Pow(Z, 2)); }
             set
             {
                 if (value < 0)
@@ -60,32 +90,34 @@ namespace AOSharp.Common.GameData
                 }
                 else
                 {
-                    double factor = value / Magnitude;
-                    X = (float)(X * factor);
-                    Y = (float)(Y * factor);
-                    Z = (float)(Z * factor);
+                    float factor = value / Magnitude;
+                    X = (X * factor);
+                    Y = (Y * factor);
+                    Z = (Z * factor);
                 }
             }
         }
 
+        public float SqrMagnitude { get { return X * X + Y * Y + Z * Z; } }
+
         public static float Angle(Vector3 from, Vector3 to)
         {
-            return (float)Math.Acos(Vector3.Dot(from.Normalize(), to.Normalize())) * 57.29578f;
+            return Mathf.Acos(Vector3.Dot(from.Normalize(), to.Normalize())) * 57.29578f;
         }
 
         public static float Distance(Vector3 from, Vector3 to)
         {
-            return (float)Math.Sqrt(Math.Pow(Math.Abs(from.X - to.X), 2) + Math.Pow(Math.Abs(from.Y - to.Y), 2) + Math.Pow(Math.Abs(from.Z - to.Z), 2));
+            return Mathf.Sqrt(Mathf.Pow(Mathf.Abs(from.X - to.X), 2) + Mathf.Pow(Mathf.Abs(from.Y - to.Y), 2) + Mathf.Pow(Mathf.Abs(from.Z - to.Z), 2));
         }
 
         public float DistanceFrom(Vector3 pos)
         {
-            return (float)Math.Sqrt(Math.Pow(Math.Abs(X - pos.X), 2) + Math.Pow(Math.Abs(Y - pos.Y), 2) + Math.Pow(Math.Abs(Z - pos.Z), 2));
+            return Mathf.Sqrt(Mathf.Pow(Mathf.Abs(X - pos.X), 2) + Mathf.Pow(Mathf.Abs(Y - pos.Y), 2) + Mathf.Pow(Mathf.Abs(Z - pos.Z), 2));
         }
 
         public float Distance2DFrom(Vector3 pos)
         {
-            return (float)Math.Sqrt(Math.Pow(Math.Abs(X - pos.X), 2) + Math.Pow(Math.Abs(Z - pos.Z), 2));
+            return Mathf.Sqrt(Mathf.Pow(Mathf.Abs(X - pos.X), 2) + Mathf.Pow(Mathf.Abs(Z - pos.Z), 2));
         }
 
         public Vector3 Translate(Vector2 vec)
@@ -97,14 +129,14 @@ namespace AOSharp.Common.GameData
         {
             localPos.X -= pivot.X;
             localPos.Z -= pivot.Z;
-            float dist = (float)Math.Sqrt(localPos.X * localPos.X + localPos.Z * localPos.Z);
+            float dist = Mathf.Sqrt(localPos.X * localPos.X + localPos.Z * localPos.Z);
 
-            double ca = Math.Atan2(localPos.Z, localPos.X) * 180 / Math.PI;
-            double na = ((ca + (360 - angle)) % 360) * Math.PI / 180;
+            float ca = Mathf.Atan2(localPos.Z, localPos.X) * 180 / Mathf.PI;
+            float na = ((ca + (360 - angle)) % 360) * Mathf.PI / 180;
 
             Vector3 newVertexPos = new Vector3(0, localPos.Y, 0);
-            newVertexPos.X = (pivot.X + dist * (float)Math.Cos(na));
-            newVertexPos.Z = (pivot.Z + dist * (float)Math.Sin(na));
+            newVertexPos.X = (pivot.X + dist * Mathf.Cos(na));
+            newVertexPos.Z = (pivot.Z + dist * Mathf.Sin(na));
 
             return newVertexPos;
         }
@@ -113,7 +145,7 @@ namespace AOSharp.Common.GameData
         {
             Vector3 lineDelta = end - start;
             Vector3 pointDelta = this - start;
-            float lineSquareLength = lineDelta.LengthSquared();
+            float lineSquareLength = lineDelta.SqrMagnitude;
             float dot = (float)lineDelta.Dot(pointDelta);
             float percent = dot / lineSquareLength;
 
@@ -129,16 +161,17 @@ namespace AOSharp.Common.GameData
             return this + new Vector3(rnd.Next((int)-magnitude, (int)magnitude), 0, rnd.Next((int)-magnitude, (int)magnitude));
         }
 
+        [Obsolete("This property is obsolete. Use Magnitude instead.")]
         public float Length()
         {
-            return (float)Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
+            return Mathf.Sqrt((X * X) + (Y * Y) + (Z * Z));
         }
 
+        [Obsolete("This property is obsolete. Use SqrMagnitude instead.")]
         public float LengthSquared()
         {
             return (X * X) + (Y * Y) + (Z * Z);
         }
-
 
         /// <summary>
         /// Returns the Absolute value of the Vector
@@ -163,7 +196,7 @@ namespace AOSharp.Common.GameData
         /// <param name="v1">Vector</param>
         public static bool IsUnitVector(Vector3 v1)
         {
-            return Math.Abs(v1.Magnitude - 1) <= double.Epsilon;
+            return Mathf.Abs(v1.Magnitude - 1) <= double.Epsilon;
         }
 
         /// <summary>
@@ -227,7 +260,7 @@ namespace AOSharp.Common.GameData
         /// </summary>
         /// <param name="v1">Vector 1</param>
         /// <param name="v2">Vector 2</param>
-        public static double Dot(Vector3 v1, Vector3 v2)
+        public static float Dot(Vector3 v1, Vector3 v2)
         {
             return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
         }
@@ -236,7 +269,7 @@ namespace AOSharp.Common.GameData
         /// Returns the Dot Product of two Vectors
         /// </summary>
         /// <param name="v1">Other Vector</param>
-        public double Dot(Vector3 v1)
+        public float Dot(Vector3 v1)
         {
             return Dot(this, v1);
         }
@@ -256,6 +289,10 @@ namespace AOSharp.Common.GameData
             return new Vector3(v.X * mag, v.Y * mag, v.Z * mag);
         }
 
+        public static Vector3 operator *(float mag, Vector3 v)
+        {
+            return new Vector3(v.X * mag, v.Y * mag, v.Z * mag);
+        }
 
         public static Vector3 operator *(Vector3 v1, Vector3 v2)
         {
@@ -270,6 +307,11 @@ namespace AOSharp.Common.GameData
         public static Vector3 operator -(Vector3 v1, Vector3 v2)
         {
             return new Vector3(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
+        }
+
+        public static Vector3 operator -(Vector3 a)
+        {
+            return new Vector3(-a.X, -a.Y, -a.Z);
         }
 
         public static Vector3 operator /(Vector3 v, float mag)
@@ -298,9 +340,21 @@ namespace AOSharp.Common.GameData
                 return false;
         }
 
+        public override int GetHashCode()
+        {
+            return X.GetHashCode() ^ (Y.GetHashCode() << 2) ^ (Z.GetHashCode() >> 2);
+        }
+
         public bool Equals(Vector3 pos)
         {
             return pos == this;
+        }
+
+        public override bool Equals(object other)
+        {
+            if (other is Vector3 v)
+                return Equals(v);
+            return false;
         }
     }
 }

@@ -34,6 +34,11 @@ namespace AOSharp.Core
             Pointer = pointer;
         }
 
+        public static bool Find(Identity identity, out Mission mission)
+        {
+            return (mission = GetMissions().FirstOrDefault(x => x.Identity == identity)) != null;
+        }
+
         public static bool Find(string displayName, out Mission mission)
         {
             return (mission = GetMissions().FirstOrDefault(x => x.DisplayName == displayName)) != null;

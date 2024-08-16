@@ -64,11 +64,6 @@ namespace AOSharp.Core.Inventory
             _pendingUse = (Slot, Time.NormalTime + USE_TIMEOUT);
         }
 
-        public void UseOn(Dynel target)
-        {
-            UseOn(target.Identity);
-        }
-
         public void UseOn(Identity target)
         {
             if (target.Type == IdentityType.SimpleChar)

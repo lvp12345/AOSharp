@@ -40,6 +40,15 @@ namespace AOSharp.Core.UI
             Window.Show(true);
         }
 
+        public void Close()
+        {
+            if (Window == null || !Window.IsValid)
+                return;
+
+            Window.Close();
+            Window = null;
+        }
+
         protected abstract void OnWindowCreating();
     }
 }

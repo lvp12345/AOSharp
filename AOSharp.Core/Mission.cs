@@ -21,7 +21,7 @@ namespace AOSharp.Core
 
         public Identity Source => (*(MissionMemStruct*)Pointer).Source;
 
-        public Identity Playfield => (*(MissionMemStruct*)Pointer).Playfield;
+        public Identity PlayfieldInstance => (*(MissionMemStruct*)Pointer).Playfield;
 
         public MissionLocation Location => N3EngineClientAnarchy.GetQuestWorldPos(Identity, out Identity pf, out Vector3 uniPos, out Vector3 pos) ? new MissionLocation(pf, uniPos, pos) : null;
 
@@ -49,6 +49,16 @@ namespace AOSharp.Core
         public static bool Exists(string displayName)
         {
             return GetMissions().Exists(x => x.DisplayName == displayName);
+        }
+
+        public static bool FindMissionForCurrentDungeon(out Mission mission)
+        {
+            mission = null;
+
+            if (!Playfield.IsDungeon)
+                return false;
+
+            return (mission = GetMissions().FirstOrDefault(x => x.PlayfieldInstance == Playfield.ModelIdentity)) != null;
         }
 
         private static List<Mission> GetMissions()

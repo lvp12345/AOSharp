@@ -36,7 +36,7 @@ namespace AOSharp.Core
         public static EventHandler<float> OnUpdate;
         public static EventHandler TeleportStarted;
         public static EventHandler TeleportEnded;
-        public static EventHandler TeleportFailed; 
+        public static EventHandler TeleportFailed;
         public static EventHandler<uint> PlayfieldInit;
 
         private static Dictionary<IntPtr, Delegate> _vtblCache = new Dictionary<IntPtr, Delegate>();
@@ -110,7 +110,7 @@ namespace AOSharp.Core
                 MovementController.Instance.Halt();
         }
 
-        private static void OnEarlyUpdateInternal (float deltaTime)
+        private static void OnEarlyUpdateInternal(float deltaTime)
         {
             if (DynelManager.LocalPlayer == null)
                 return;
@@ -141,10 +141,10 @@ namespace AOSharp.Core
             CombatHandler.Instance?.Update(deltaTime);
 
             try
-            { 
+            {
                 OnUpdate?.Invoke(null, deltaTime);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Chat.WriteLine(e.Message);
             }
@@ -166,19 +166,24 @@ namespace AOSharp.Core
 
         private static void OnTeleportEnded()
         {
+            IsZoning = false;
+
             try
             {
                 TeleportEnded?.Invoke(null, EventArgs.Empty);
             }
-            catch {}
-
-            IsZoning = false;
+            catch { }
         }
 
         private static void OnTeleportFailed()
         {
             IsZoning = false;
-            TeleportFailed?.Invoke(null, EventArgs.Empty);
+
+            try
+            {
+                TeleportFailed?.Invoke(null, EventArgs.Empty);
+            }
+            catch { }
         }
 
         private static void OnPlayfieldInit(uint id)

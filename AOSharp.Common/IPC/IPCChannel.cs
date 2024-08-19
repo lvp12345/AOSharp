@@ -34,7 +34,7 @@ namespace AOSharp.Core.IPC
         private static PacketInspector _packetInspector;
 
         private ConcurrentQueue<byte[]> _packetQueue = new ConcurrentQueue<byte[]>();
-        private Dictionary<int, Action<int, IPCMessage>> _callbacks = new Dictionary<int, Action<int, IPCMessage>>();
+        private Dictionary<int, List<Action<int, IPCMessage>>> _callbacks = new Dictionary<int, List<Action<int, IPCMessage>>>();
         private static List<IPCChannelBase> _ipcChannels = new List<IPCChannelBase>();
 
         protected IPCChannelBase(byte channelId)
@@ -128,7 +128,8 @@ namespace AOSharp.Core.IPC
                     IPCMessage message = (IPCMessage)serializer.Deserialize(reader, serializationContext);
 
                     if (_callbacks.ContainsKey(opCode))
-                        _callbacks[opCode]?.Invoke(charId, message);
+                        foreach(var callback in _callbacks[opCode])
+                            callback?.Invoke(charId, message);
                 }
             }
             catch (Exception e)
@@ -167,10 +168,10 @@ namespace AOSharp.Core.IPC
 
         public void RegisterCallback(int opCode, Action<int, IPCMessage> callback)
         {
-            if (_callbacks.ContainsKey(opCode))
-                return;
+            if (!_callbacks.ContainsKey(opCode))
+                _callbacks[opCode] = new List<Action<int, IPCMessage>>();
 
-            _callbacks.Add(opCode, callback);
+            _callbacks[opCode].Add(callback);
         }
 
         public static void LoadMessages(Assembly assembly)

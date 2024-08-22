@@ -20,6 +20,13 @@ namespace AOSharp.Core.UI
             return new RadioButtonGroup(pView, true);
         }
 
+        public Variant GetValue()
+        {
+            Variant value = Variant.Create();
+            RadioButtonGroup_c.GetValue(Pointer, value.Pointer);
+            return value;
+        }
+
         public override void Dispose()
         {
             View_c.Deconstructor(_pointer);

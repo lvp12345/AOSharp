@@ -11,9 +11,8 @@ namespace AOSharp.Common.Unmanaged.Imports
         [DllImport("GUI.dll", EntryPoint = "??0RadioButtonGroup_c@@QAE@ABVRect@@ABVString@@HII@Z", CallingConvention = CallingConvention.ThisCall)]
         internal static extern IntPtr Constructor(IntPtr pThis, IntPtr pName, int unk1, uint unk2, uint unk3);
 
-        [return: MarshalAs(UnmanagedType.U1)]
         [DllImport("GUI.dll", EntryPoint = "?GetValue@RadioButtonGroup_c@@UBE?AVVariant@@XZ", CallingConvention = CallingConvention.ThisCall)]
-        public static extern IntPtr GetState(IntPtr pThis, IntPtr pVariant);
+        public static extern IntPtr GetValue(IntPtr pThis, IntPtr pVariant);
 
         public static IntPtr Create(string name, int unk1, uint unk2, uint unk3)
         {

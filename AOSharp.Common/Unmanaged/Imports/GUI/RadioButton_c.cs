@@ -18,6 +18,9 @@ namespace AOSharp.Common.Unmanaged.Imports
         [DllImport("GUI.dll", EntryPoint = "?GetState@RadioButton_c@@QBE_NXZ", CallingConvention = CallingConvention.ThisCall)]
         public static extern bool GetState(IntPtr pThis);
 
+        [DllImport("GUI.dll", EntryPoint = "?SetState@RadioButton_c@@QAEX_N@Z", CallingConvention = CallingConvention.ThisCall)]
+        public static extern void SetState(IntPtr pThis, bool state);
+
         public static IntPtr Create(string name, string labelText, int unk1, uint unk2, uint unk3)
         {
             StdString nameStr = StdString.Create(name);

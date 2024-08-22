@@ -14,6 +14,9 @@ namespace AOSharp.Common.Unmanaged.Imports
         [DllImport("GUI.dll", EntryPoint = "?GetValue@RadioButtonGroup_c@@UBE?AVVariant@@XZ", CallingConvention = CallingConvention.ThisCall)]
         public static extern IntPtr GetValue(IntPtr pThis, IntPtr pVariant);
 
+        [DllImport("GUI.dll", EntryPoint = "?SetValue@RadioButtonGroup_c@@UAEXABVVariant@@_N@Z", CallingConvention = CallingConvention.ThisCall)]
+        public static extern void SetValue(IntPtr pThis, IntPtr pVariant, bool unk);
+
         public static IntPtr Create(string name, int unk1, uint unk2, uint unk3)
         {
             IntPtr pNew = MSVCR100.New(0x250);

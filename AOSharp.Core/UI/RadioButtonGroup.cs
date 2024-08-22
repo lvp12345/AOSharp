@@ -27,6 +27,11 @@ namespace AOSharp.Core.UI
             return value;
         }
 
+        public void SetValue(Variant variant)
+        {
+            RadioButtonGroup_c.SetValue(Pointer, variant.Pointer, true);
+        }
+
         public override void Dispose()
         {
             View_c.Deconstructor(_pointer);

@@ -113,53 +113,67 @@ namespace AOSharp.Navigator
             visited.Add(fromId);
             queue.Enqueue(fromId);
 
-            while(queue.Any())
+            try
             {
-                PlayfieldId id = queue.Dequeue();
-
-                path.Add(id);
-
-                if (id == toId)
-                    break;
-
-                foreach(PlayfieldLink link in PlayfieldMap[id].Links)
+                while (queue.Any())
                 {
-                    if (link is GridTerminalLink && link.DstId == PlayfieldId.Grid && useFGrid)
-                    {
-                        visited.Add(PlayfieldId.FixerGrid);
-                        queue.Enqueue(PlayfieldId.FixerGrid);
-                    }
+                    PlayfieldId id = queue.Dequeue();
 
-                    if (visited.Contains(link.DstId))
+                    path.Add(id);
+
+                    if (id == toId)
+                        break;
+
+                    if (!PlayfieldMap.ContainsKey(id))
                         continue;
 
-                    visited.Add(link.DstId);
-                    queue.Enqueue(link.DstId);
+                    foreach (PlayfieldLink link in PlayfieldMap[id].Links)
+                    {
+                        if (link is GridTerminalLink && link.DstId == PlayfieldId.Grid && useFGrid)
+                        {
+                            visited.Add(PlayfieldId.FixerGrid);
+                            queue.Enqueue(PlayfieldId.FixerGrid);
+                        }
+
+                        if (visited.Contains(link.DstId))
+                            continue;
+
+                        visited.Add(link.DstId);
+                        queue.Enqueue(link.DstId);
+                    }
                 }
-            }
 
-            path.Reverse();
+                path.Reverse();
 
-            List<PlayfieldLink> pathLinks = new List<PlayfieldLink>();
-            PlayfieldId lastValidId = toId;
+                List<PlayfieldLink> pathLinks = new List<PlayfieldLink>();
+                PlayfieldId lastValidId = toId;
 
-            foreach (PlayfieldId id in path)
-            {
-                if(lastValidId == PlayfieldId.FixerGrid && PlayfieldMap[id].TryGetLink(PlayfieldId.Grid, out PlayfieldLink gridLink) && gridLink is GridTerminalLink gridTerminalLink)
+                foreach (PlayfieldId id in path)
                 {
-                    pathLinks.Add(new FixerGridTerminalLink(gridTerminalLink.TerminalPos));
-                    lastValidId = id;
+                    if (!PlayfieldMap.ContainsKey(id))
+                        continue;
+
+                    if (lastValidId == PlayfieldId.FixerGrid && PlayfieldMap[id].TryGetLink(PlayfieldId.Grid, out PlayfieldLink gridLink) && gridLink is GridTerminalLink gridTerminalLink)
+                    {
+                        pathLinks.Add(new FixerGridTerminalLink(gridTerminalLink.TerminalPos));
+                        lastValidId = id;
+                    }
+                    else if (PlayfieldMap[id].TryGetLink(lastValidId, out PlayfieldLink link))
+                    {
+                        pathLinks.Add(link);
+                        lastValidId = id;
+                    }
                 }
-                else if (PlayfieldMap[id].TryGetLink(lastValidId, out PlayfieldLink link))
-                { 
-                    pathLinks.Add(link);
-                    lastValidId = id;
-                }
+
+                pathLinks.Reverse();
+
+                return pathLinks;
+            } catch (Exception e)
+            {
+                Chat.WriteLine(e);
             }
 
-            pathLinks.Reverse();
-
-            return pathLinks;
+            return new List<PlayfieldLink>();
         }
 
         private void InitPlayfields()

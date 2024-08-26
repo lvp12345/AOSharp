@@ -31,11 +31,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AOSharp.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AOSharpSDK.1.0.81\lib\net48\AOSharp.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="AOSharp.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AOSharpSDK.1.0.81\lib\net48\AOSharp.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="AOSharp.SharpNav, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AOSharpSDK.SharpNav.1.0.28\lib\net48\AOSharp.SharpNav.dll</HintPath>
+    </Reference>
     <Reference Include="BehaviourTree, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\BehaviourTree.1.0.73\lib\netstandard1.0\BehaviourTree.dll</HintPath>
-    </Reference>
-    <Reference Include="cai-nav">
-      <HintPath>..\NavmeshMovementController\CritterAi\cai-nav.dll</HintPath>
     </Reference>
     <Reference Include="JsonSubTypes, Version=2.0.1.0, Culture=neutral, PublicKeyToken=ee75fc290dbc1176, processorArchitecture=MSIL">
       <HintPath>..\packages\JsonSubTypes.2.0.1\lib\net47\JsonSubTypes.dll</HintPath>
@@ -200,14 +206,6 @@
     <Compile Include="Vector3Converter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AOSharp.Common\AOSharp.Common.csproj">
-      <Project>{2f48116b-5d7e-449c-a05a-7d82ea7169a3}</Project>
-      <Name>AOSharp.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AOSharp.Core\AOSharp.Core.csproj">
-      <Project>{77516561-fa9c-47cd-8c2d-fc8a8b67876b}</Project>
-      <Name>AOSharp.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NavmeshMovementController\NavmeshMovementController.csproj">
       <Project>{233EAFC2-E9AE-427C-BF22-EFCD7822213F}</Project>
       <Name>NavmeshMovementController</Name>

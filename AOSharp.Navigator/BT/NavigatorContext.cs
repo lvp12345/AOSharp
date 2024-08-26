@@ -1,5 +1,5 @@
 ﻿using AOSharp.Common.GameData;
-using org.critterai.nav;
+using SharpNav;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace AOSharp.Navigator.BT
 
         internal Queue<NavigatorTask> Tasks = new Queue<NavigatorTask>();
 
-        internal Dictionary<PlayfieldId, Navmesh> NavmeshCache = new Dictionary<PlayfieldId, Navmesh>();
+        internal Dictionary<PlayfieldId, NavMesh> NavmeshCache = new Dictionary<PlayfieldId, NavMesh>();
 
         public NavigatorContext(AONavigator navigator)
         {

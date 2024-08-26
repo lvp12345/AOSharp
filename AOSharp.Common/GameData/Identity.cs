@@ -15,6 +15,7 @@ namespace AOSharp.Common.GameData
         BankByRef = 0x69,
         Reclaim = 0x6A,
         Backpack = 0x6B,
+        Contract = 0x6D,
         KnuBotTradeWindow = 0x6C,
         OverflowWindow = 0x6E,
         TradeWindow = 0x6F,

@@ -35,16 +35,16 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.ChatMessages
         [AoMember(0)]
         public uint ChannelId { get; set; }
 
-        [AoMember(0)]
+        [AoMember(1)]
         public uint Sender { get; set; }
 
-        [AoMember(1, SerializeSize = ArraySizeType.Int16)]
+        [AoMember(2, SerializeSize = ArraySizeType.Int16)]
         public string Text { get; set; }
 
-        [AoMember(2)]
+        [AoMember(3)]
         public byte Unk1 { get; set; }
 
-        [AoMember(3)]
+        [AoMember(4)]
         public byte Unk2 { get; set; }
     }
 }

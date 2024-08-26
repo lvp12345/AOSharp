@@ -326,6 +326,7 @@
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\ByteSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\BoolSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\Custom\FriendStatusSerializer.cs" />
+    <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\Custom\PrivateGroupMessageSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\Custom\LookupMessageSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\Custom\InspectSerializer.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Serialization\Serializers\Custom\PlayfieldTowerUpdateSerializer.cs" />

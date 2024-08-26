@@ -10,9 +10,8 @@ using System.Threading.Tasks;
 using AOSharp.Common.GameData;
 using AOSharp.Core.UI;
 using AOSharp.Pathfinding;
-using org.critterai.nav;
-using System.IO;
 using AOSharp.Core.Inventory;
+using SharpNav;
 
 namespace AOSharp.Navigator.BT
 {
@@ -238,17 +237,16 @@ namespace AOSharp.Navigator.BT
 
         public static BehaviourStatus LoadNavmesh(NavigatorContext context)
         {
-            if (!(MovementController.Instance is NewNavmeshMovementController movementController))
+            if (!SMovementController.IsLoaded())
             {
-                movementController = new NewNavmeshMovementController();
-                MovementController.Set(movementController);
+                SMovementController.Set();
             }
 
-            if(!context.NavmeshCache.TryGetValue((PlayfieldId)Playfield.ModelIdentity.Instance, out Navmesh navmesh))
+            if (!context.NavmeshCache.TryGetValue((PlayfieldId)Playfield.ModelIdentity.Instance, out NavMesh navmesh))
             {
-                string navMeshPath = $"{System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\NavMeshes\\{Playfield.ModelIdentity.Instance}.Navmesh";
+                string navMeshPath = $"{System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\NavMeshes\\{Playfield.ModelIdentity.Instance}.nav";
 
-                if (!File.Exists(navMeshPath) || !movementController.LoadNavmesh(navMeshPath, out navmesh))
+                if (!SNavMeshSerializer.LoadFromFile(navMeshPath, out navmesh))
                 {
                     //TODO: Throw exception
                     Chat.WriteLine($"Unable to load Nav mesh for {Playfield.ModelIdentity.Instance}");
@@ -259,10 +257,10 @@ namespace AOSharp.Navigator.BT
                 context.NavmeshCache.Add((PlayfieldId)Playfield.ModelIdentity.Instance, navmesh);
             }
 
-            if (movementController.Pathfinder == null || !movementController.Pathfinder.IsUsingNavmesh(navmesh))
+            if (!SMovementController.NavAgent.HasPathfinder || SMovementController.NavAgent.NavMesh != navmesh)
             {
                 Chat.WriteLine($"Loading navmesh for {Playfield.ModelIdentity.Instance}");
-                movementController.SetNavmesh(navmesh);
+                SMovementController.LoadNavmesh(navmesh, true);
             }
 
             return BehaviourStatus.Succeeded;
@@ -273,9 +271,7 @@ namespace AOSharp.Navigator.BT
             if (!IsTaskValid(context, task))
                 return BehaviourStatus.Succeeded;
 
-            NewNavmeshMovementController movementController = MovementController.Instance as NewNavmeshMovementController;
-
-            if (Vector3.Distance(DynelManager.LocalPlayer.Position, transitionPos) < 1f && !movementController.IsNavigating)
+            if (Vector3.Distance(DynelManager.LocalPlayer.Position, transitionPos) < 1f && !SMovementController.IsNavigating())
             {
                 if (task is MoveToTask)
                 {
@@ -288,10 +284,10 @@ namespace AOSharp.Navigator.BT
                 return BehaviourStatus.Succeeded;
             }
 
-            if (movementController.IsNavigating)
+            if (SMovementController.IsNavigating())
                 return BehaviourStatus.Running;
 
-            movementController.SetNavMeshDestination(transitionPos);
+            SMovementController.SetNavDestination(transitionPos);
             return BehaviourStatus.Running;
         }
 

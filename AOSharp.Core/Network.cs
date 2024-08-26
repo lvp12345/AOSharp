@@ -122,7 +122,10 @@ namespace AOSharp.Core
                         OnOutboundN3Message((N3Message)msg.Body);
 
                 while (_inboundChatMessageQueue.TryDequeue(out ChatMessage msg))
+                {
+                    Chat.OnChatMessage(msg.Body);
                     ChatMessageReceived?.Invoke(null, msg.Body);
+                }
             }
             catch (Exception e)
             {

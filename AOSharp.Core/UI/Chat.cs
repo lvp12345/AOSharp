@@ -7,6 +7,7 @@ using System.Linq;
 using SmokeLounge.AOtomation.Messaging.Messages;
 using AOSharp.Common.SharedEventArgs;
 using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
+using SmokeLounge.AOtomation.Messaging.Messages.ChatMessages;
 
 namespace AOSharp.Core.UI
 {
@@ -16,7 +17,10 @@ namespace AOSharp.Core.UI
         private static ConcurrentQueue<(string, ChatColor)> _messageQueue = new ConcurrentQueue<(string, ChatColor)>();
         public static EventHandler<GroupMessageEventArgs> GroupMessageReceived;
         public static Action<string> FeedbackReceived;
-        
+
+        public static Action<PrivateGroupMessage> PrivateGroupMessageReceived;
+        public static Action<PrivateGroupInviteMessage> PrivateGroupInviteReceived;
+
         public static void RegisterCommand(string command, Action<string, string[], ChatWindow> callback)
         {
             if(!_customCommands.ContainsKey(command))
@@ -67,6 +71,44 @@ namespace AOSharp.Core.UI
             _messageQueue.Enqueue((text, color));
         }
 
+        public static void InvitePrivateGroup(uint recipient)
+        {
+            Network.Send(new PrivateGroupInviteMessage
+            {
+                Sender = recipient
+            });
+        }
+
+        public static void AcceptPrivateGroupInvite(uint recipient)
+        {
+            Network.Send(new PrivateGroupInviteAcceptMessage
+            {
+                Sender = recipient
+            });
+        }
+
+        public static void SendPrivateGroupMessage(uint channelId, string msg)
+        {
+            Network.Send(new PrivateGroupMessage
+            {
+                ChannelId = channelId,
+                Sender = (uint)Game.ClientInst,
+                Text = msg,
+            });
+        }
+
+        public static void SendPrivateMessage(uint recipient, string message)
+        {
+            Network.Send(new PrivateMsgMessage()
+            {
+                Sender = recipient,
+                Text = message,
+                Unk1 = 0x0001,
+            });
+
+            Chat.WriteLine($"To [{recipient}]: {message}", ChatColor.LightBlue);
+        }
+
         public static void SendVicinityMessage(string text, VicinityMessageType messageType = VicinityMessageType.Vicinity)
         {
             //Tbh I don't really understand the difference here but w/e we get our result.
@@ -80,6 +122,14 @@ namespace AOSharp.Core.UI
                 Text = text,
                 Range = (TextMessageRange)messageType
             });
+        }
+
+        internal static void OnChatMessage(ChatMessageBody chatMsg)
+        {
+            if (chatMsg is PrivateGroupMessage privGroupMsg)
+                PrivateGroupMessageReceived?.Invoke(privGroupMsg);
+            else if (chatMsg is PrivateGroupInviteMessage privGroupInvMsg)
+                PrivateGroupInviteReceived?.Invoke(privGroupInvMsg);
         }
     }
 

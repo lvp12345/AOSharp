@@ -4,6 +4,7 @@ using AOSharp.Core.Misc;
 using AOSharp.Core.Movement;
 using AOSharp.Core.UI;
 using AOSharp.Navigator.BT;
+using AOSharp.Pathfinding;
 using BehaviourTree;
 using Newtonsoft.Json;
 using SmokeLounge.AOtomation.Messaging.GameData;
@@ -46,7 +47,7 @@ namespace AOSharp.Navigator
             //Chat.WriteLine($"Dequeuing task: {task} - {task.DstId}");
             //Chat.WriteLine($"Next Task task: {_btContext.Tasks.Peek()} - {_btContext.Tasks.Peek().DstId}");
 
-            if (task.DstId != (PlayfieldId)Playfield.ModelIdentity.Instance)
+            if (task.DstId != Playfield.ModelId)
             {
                 _btContext.Tasks.Clear();
                 return;
@@ -66,7 +67,7 @@ namespace AOSharp.Navigator
 
         public void MoveTo(PlayfieldId id, bool useFGrid = false, bool preferFGrid = true, Action destinationReachedCallback = null)
         {
-            if ((PlayfieldId)Playfield.ModelIdentity.Instance != id)
+            if (Playfield.ModelId != id)
             {
                 var path = GetPathTo(id, useFGrid, preferFGrid);
 
@@ -96,7 +97,7 @@ namespace AOSharp.Navigator
         public void Halt()
         {
             _btContext.Tasks.Clear();
-            MovementController.Instance.Halt();
+            SMovementController.Halt();
         }
 
         public List<PlayfieldLink> GetPathTo(PlayfieldId toId, bool useFGrid = false, bool preferFGrid = true)
@@ -106,74 +107,76 @@ namespace AOSharp.Navigator
 
         public List<PlayfieldLink> GetPathFromTo(PlayfieldId fromId, PlayfieldId toId, bool useFGrid = false, bool preferFGrid = true)
         {
-            List<PlayfieldId> path = new List<PlayfieldId>();
-            List<PlayfieldId> visited = new List<PlayfieldId>();
-            Queue<PlayfieldId> queue = new Queue<PlayfieldId>();
+            Dictionary<PlayfieldId, float> distance = new Dictionary<PlayfieldId, float>();
+            List<PlayfieldId> vertices = new List<PlayfieldId>();
+            Stack<PlayfieldId> path = new Stack<PlayfieldId>();
+            Dictionary<PlayfieldId, PlayfieldId> previous = new Dictionary<PlayfieldId, PlayfieldId>();
 
-            visited.Add(fromId);
-            queue.Enqueue(fromId);
+            distance[fromId] = 0;
+            vertices.Add(fromId);
 
-            try
+            foreach (var pfId in PlayfieldMap.Keys)
             {
-                while (queue.Any())
+                if (pfId == fromId) 
+                    continue;
+
+                distance[pfId] = float.MaxValue;
+                vertices.Add(pfId);
+            }
+
+            while (vertices.Any())
+            {
+                PlayfieldId current = vertices.OrderBy(x => distance[x]).First();
+                vertices.Remove(current);
+
+                if (current == toId)
                 {
-                    PlayfieldId id = queue.Dequeue();
-
-                    path.Add(id);
-
-                    if (id == toId)
-                        break;
-
-                    if (!PlayfieldMap.ContainsKey(id))
-                        continue;
-
-                    foreach (PlayfieldLink link in PlayfieldMap[id].Links)
+                    while (true)
                     {
-                        if (link is GridTerminalLink && link.DstId == PlayfieldId.Grid && useFGrid)
-                        {
-                            visited.Add(PlayfieldId.FixerGrid);
-                            queue.Enqueue(PlayfieldId.FixerGrid);
-                        }
+                        path.Push(current);
 
-                        if (visited.Contains(link.DstId))
-                            continue;
+                        if (!previous.ContainsKey(current))
+                            break;
 
-                        visited.Add(link.DstId);
-                        queue.Enqueue(link.DstId);
+                        current = previous[current];
                     }
+
+                    return GetLinksForPath(path.ToList());
                 }
 
-                path.Reverse();
+                if (!PlayfieldMap.ContainsKey(current))
+                    continue;
 
-                List<PlayfieldLink> pathLinks = new List<PlayfieldLink>();
-                PlayfieldId lastValidId = toId;
-
-                foreach (PlayfieldId id in path)
+                foreach (PlayfieldLink link in PlayfieldMap[current].Links)
                 {
-                    if (!PlayfieldMap.ContainsKey(id))
+                    if (!PlayfieldMap.ContainsKey(link.DstId))
                         continue;
 
-                    if (lastValidId == PlayfieldId.FixerGrid && PlayfieldMap[id].TryGetLink(PlayfieldId.Grid, out PlayfieldLink gridLink) && gridLink is GridTerminalLink gridTerminalLink)
+                    float dist = 1;
+                    float alt = distance[current] + dist;
+
+                    if (alt < distance[link.DstId])
                     {
-                        pathLinks.Add(new FixerGridTerminalLink(gridTerminalLink.TerminalPos));
-                        lastValidId = id;
-                    }
-                    else if (PlayfieldMap[id].TryGetLink(lastValidId, out PlayfieldLink link))
-                    {
-                        pathLinks.Add(link);
-                        lastValidId = id;
+                        distance[link.DstId] = alt;
+                        previous[link.DstId] = current;
                     }
                 }
-
-                pathLinks.Reverse();
-
-                return pathLinks;
-            } catch (Exception e)
-            {
-                Chat.WriteLine(e);
             }
 
             return new List<PlayfieldLink>();
+        }
+
+        private List<PlayfieldLink> GetLinksForPath(List<PlayfieldId> path)
+        {
+            List<PlayfieldLink> links = new List<PlayfieldLink>();
+
+            for(int i = 0; i < path.Count - 1; i++)
+            {
+                PlayfieldMap[path[i]].TryGetLink(path[i + 1], out PlayfieldLink link);
+                links.Add(link);
+            }
+
+            return links;
         }
 
         private void InitPlayfields()
@@ -186,6 +189,7 @@ namespace AOSharp.Navigator
             try
             {
                 PlayfieldMap = JsonConvert.DeserializeObject<Dictionary<PlayfieldId, PlayfieldNode>>(File.ReadAllText(configPath));
+                Chat.WriteLine($"Navigator Loaded");
             }
             catch (Exception e)
             {

@@ -79,6 +79,29 @@
   "646": {
     "Links": []
   },
+  "655": {
+    "Links": [
+      {
+        "$type": "GridTerminalLink",
+        "TerminalPos": [ 3179.6, 35.9, 880 ]
+      },
+      {
+        "$type": "TeleporterLink",
+        "DstID": 4530,
+        "TeleporterPos": [ 3183.7, 36.2, 865.9 ]
+      },
+      {
+        "$type": "TeleporterLink",
+        "DstID": 710,
+        "TeleporterPos": [ 3178.2, 36.2, 871.2 ]
+      },
+      {
+        "$type": "TeleporterLink",
+        "DstID": 566,
+        "TeleporterPos": [ 3173.7, 36.2, 866.1 ]
+      }
+    ]
+  },
   "656": {
     "Links": [
       {
@@ -115,6 +138,17 @@
       }
     ]
   },
+  "4001": {
+    "Links": [
+      {
+        "$type": "ZoneBorderLink",
+        "DstId": 4310,
+        "TransitionSpots": [
+          [ 856, 34.4, 965 ]
+        ]
+      }
+    ]
+  },
   "4107": {
     "Links": [
       {
@@ -124,7 +158,51 @@
       }
     ]
   },
-  "6007": {
-    "Links": []
+  "4310": {
+    "Links": [
+      {
+        "$type": "ZoneBorderLink",
+        "DstId": 4001,
+        "TransitionSpots": [
+          [ 852, 34.4, 967 ]
+        ]
+      },
+      {
+        "$type": "UseOnTerminalLink",
+        "DstId": 4677,
+        "TerminalName": "Thrak Statue",
+        "TerminalPos": [ 793.1, 31.8, 1148 ],
+        "ItemName": "The Key to the Garden of Thrak"
+      }
+    ]
+
+  },
+  "4530": {
+    "Links": [
+      {
+        "$type": "TeleporterLink",
+        "DstId": 4531,
+        "TeleporterPos": [ 274.1, 194.1, 574.4 ]
+      },
+      {
+        "$type": "TeleporterLink",
+        "DstId": 655,
+        "TeleporterPos": [ 292.7, 199.5, 622.5 ]
+      }
+    ]
+  },
+  "4531": {
+    "Links": [
+      {
+        "$type": "TeleporterLink",
+        "DstId": 4530,
+        "TeleporterPos": [ 148.8, 285, 293 ]
+      },
+      {
+        "$type": "TeleporterLink",
+        "DstId": 4001,
+        "TeleporterPos": [ 201, 280.0, 360.6 ]
+      }
+    ]
   }
 }

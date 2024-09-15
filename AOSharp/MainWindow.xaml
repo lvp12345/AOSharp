@@ -51,7 +51,7 @@
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsInjected}" Value="True">
-                            <Setter Property="Foreground" Value="Green"/>
+                            <Setter Property="Foreground" Value="LightGreen"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

@@ -23,6 +23,17 @@ namespace AOSharp.Core
 {
     public static class Game
     {
+        public static float MaxFramerate
+        {
+            get {
+                IntPtr pMaximumFramerate = Kernel32.GetProcAddress(Kernel32.GetModuleHandle("AFCM.dll"), "?m_vMaximumFramerate@Timer_t@@2MA");
+                return Marshal.PtrToStructure<float>(pMaximumFramerate);
+            }
+            set {
+                IntPtr pMaximumFramerate = Kernel32.GetProcAddress(Kernel32.GetModuleHandle("AFCM.dll"), "?m_vMaximumFramerate@Timer_t@@2MA");
+                Marshal.StructureToPtr(value, pMaximumFramerate, true);
+            }
+        }
         public static bool IsZoning { get; private set; }
         public static int ClientInst => N3InterfaceModule_t.GetClientInst();
 

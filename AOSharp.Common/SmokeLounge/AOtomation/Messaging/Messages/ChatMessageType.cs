@@ -36,6 +36,10 @@ namespace SmokeLounge.AOtomation.Messaging.Messages
         PrivateGroupMessage = 57,
         ChannelList = 60,
         GroupMessage = 65,
-        Ping = 100
+        Ping = 100,
+        LftActivate = 1500,
+        LftQueryResponse = 1501,
+        LftDeactivate = 1501,
+        LftQuery = 1502
     }
 }

@@ -102,6 +102,7 @@
     <Compile Include="IPC\IPCChannel.cs" />
     <Compile Include="Logging\ChatSink.cs" />
     <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="LookingForTeam.cs" />
     <Compile Include="Misc\Interval.cs" />
     <Compile Include="ReqChecker.cs" />
     <Compile Include="Dynel\Door.cs" />

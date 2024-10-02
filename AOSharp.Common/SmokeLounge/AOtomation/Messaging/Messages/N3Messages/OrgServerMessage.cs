@@ -92,8 +92,27 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         public string Rank { get; set; }
 
         [AoMember(7, SerializeSize = ArraySizeType.X3F1)]
-        public object[] Unknown3 { get; set; }
+        public ControlledArea[] ControlledAreas { get; set; }
     }
 
     public interface IOrgServerMessage { }
+
+    public class ControlledArea
+    {
+        [AoMember(0)]
+        public PlayfieldId PlayfieldId { get; set; }
+
+        [AoMember(1)]
+        public Identity Identity { get; set; }
+
+        [AoMember(2, SerializeSize = ArraySizeType.Int16)]
+        public string Area { get; set; }
+
+        [AoMember(3)]
+        public int Level { get; set; }
+
+        [AoMember(4)]
+        public int Type { get; set; }
+
+    }
 }

@@ -53,5 +53,10 @@ namespace AOSharp.Core.Inventory
         {
             return Items.Where(x => x.Id == lowId && x.HighId == highId).ToList();
         }
+
+        public List<Item> FindAll(string name)
+        {
+            return Items.Where(x => x.Name == name).ToList();
+        }
     }
 }

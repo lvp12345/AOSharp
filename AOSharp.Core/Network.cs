@@ -44,7 +44,8 @@ namespace AOSharp.Core
             { N3MessageType.FormatFeedback, OnFormatFeedback},
             { N3MessageType.Trade, Trade.OnTradeMessage },
             { N3MessageType.Inspect, OnInspect},
-            { N3MessageType.SendScore, OnSendScore }
+            { N3MessageType.SendScore, OnSendScore },
+            { N3MessageType.OrgServer, OnOrgServer }
         };
 
         public static void Send(MessageBody message)
@@ -298,5 +299,12 @@ namespace AOSharp.Core
             CharacterAction.OnInspected(iMsg.Target, iMsg.Slot);
         }
 
+        private static void OnOrgServer(N3Message n3Msg)
+        {
+            OrgServerMessage osMsg = (OrgServerMessage)n3Msg;
+
+            if (osMsg.IOrgServerMessage is OrganizationInfo orgInfo)
+                Org.InfoReceived.Invoke(orgInfo);
+        }
     }
 }

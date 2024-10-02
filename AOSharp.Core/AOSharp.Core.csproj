@@ -84,6 +84,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Org.cs" />
     <Compile Include="Battlestation.cs" />
     <Compile Include="CharacterAction.cs" />
     <Compile Include="Combat\ICombatAction.cs" />

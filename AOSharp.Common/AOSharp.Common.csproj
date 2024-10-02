@@ -142,6 +142,10 @@
     <Compile Include="SmokeLounge\AOtomation\Messaging\GameData\VendingMachineSlot.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\FriendRemoveMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\FriendStatusMessage.cs" />
+    <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\LftActivateMessage.cs" />
+    <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\LftDeactivateMessage.cs" />
+    <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\LftQueryMessage.cs" />
+    <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\LftQueryResponseMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\LookupMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\ChatLoginOKMessage.cs" />
     <Compile Include="SmokeLounge\AOtomation\Messaging\Messages\ChatMessages\ChatLoginErrorMessage.cs" />

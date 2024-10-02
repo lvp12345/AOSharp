@@ -11,6 +11,7 @@ using AOSharp.Core.UI;
 using AOSharp.Common.Helpers;
 using AOSharp.Common.GameData;
 using SmokeLounge.AOtomation.Messaging.GameData;
+using SmokeLounge.AOtomation.Messaging.Messages.ChatMessages;
 
 namespace AOSharp.Core
 {
@@ -126,6 +127,9 @@ namespace AOSharp.Core
                 {
                     Chat.OnChatMessage(msg.Body);
                     ChatMessageReceived?.Invoke(null, msg.Body);
+
+                    if (msg.Header.PacketType == ChatMessageType.LftQueryResponse)
+                        LookingForTeam.OnLftQueryResponse((LftQueryResponseMessage)msg.Body);
                 }
             }
             catch (Exception e)

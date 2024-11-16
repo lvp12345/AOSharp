@@ -101,6 +101,22 @@ namespace AOSharp.Core
             Ws2_32.send(chatSocket, Marshal.UnsafeAddrOfPinnedArrayElement(payload, 0), payload.Length, 0);
         }
 
+        public static void ProcessMessage(MessageBody message)
+        {
+            byte[] packet = PacketFactory.Create(message);
+
+            if (packet == null)
+                return;
+
+            ProcessMessage(packet);
+        }
+
+        public static void ProcessMessage(byte[] dataBlock)
+        {
+            IntPtr pMessage = MessageProtocol.DataBlockToMessage((uint)dataBlock.Length, dataBlock);
+            N3InterfaceModule_t.ProcessMessage(N3InterfaceModule_t.GetInstance(), pMessage);
+        }
+
         internal static void Update()
         {
             try

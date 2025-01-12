@@ -34,8 +34,9 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         #region AoMember Properties
 
+
+        [AoFlags("action")]
         [AoMember(0)]
-        [AoFlags("flags")]
         public OrgClientCommand Command { get; set; }
 
         [AoMember(1)]
@@ -44,18 +45,32 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
         [AoMember(2)]
         public int Unknown1 { get; set; }
 
-        [AoMember(3, SerializeSize = ArraySizeType.Int16)]
-        [AoUsesFlags("flags", typeof(string), FlagsCriteria.EqualsToAny, 
-            new[]
-                {
-                    (int)OrgClientCommand.Create, (int)OrgClientCommand.StartVote, (int)OrgClientCommand.Vote, 
-                    (int)OrgClientCommand.Kick, (int)OrgClientCommand.Tax, (int)OrgClientCommand.BankAdd, 
-                    (int)OrgClientCommand.BankRemove, (int)OrgClientCommand.BankPaymembers, (int)OrgClientCommand.History, 
-                    (int)OrgClientCommand.Objective, (int)OrgClientCommand.Description, (int)OrgClientCommand.Name, 
-                    (int)OrgClientCommand.GoverningForm, (int)OrgClientCommand.StopVote
-                })]
-        public string CommandArgs { get; set; }
+        [AoUsesFlags("action", typeof(OrgClientNoCommandArgsMessage), FlagsCriteria.EqualsToAny, new[] { (int)OrgClientCommand.Info, (int)OrgClientCommand.Invite })]
+        [AoUsesFlags("action", typeof(OrgClientCommandArgsMessage), FlagsCriteria.EqualsToAny, new[]
+        {
+            (int)OrgClientCommand.Create, (int)OrgClientCommand.StartVote, (int)OrgClientCommand.Vote,
+            (int)OrgClientCommand.Kick, (int)OrgClientCommand.Tax, (int)OrgClientCommand.BankAdd,
+            (int)OrgClientCommand.BankRemove, (int)OrgClientCommand.BankPaymembers, (int)OrgClientCommand.History,
+            (int)OrgClientCommand.Objective, (int)OrgClientCommand.Description, (int)OrgClientCommand.Name,
+            (int)OrgClientCommand.GoverningForm, (int)OrgClientCommand.StopVote
+        })]
+        [AoMember(3)]
+        public IOrgClientMessage IOrgClientMessage { get; set; }
 
         #endregion
+    }
+
+    public interface IOrgClientMessage
+    {
+    }
+
+    public class OrgClientNoCommandArgsMessage : IOrgClientMessage
+    {
+    }
+
+    public class OrgClientCommandArgsMessage : IOrgClientMessage
+    {
+        [AoMember(0, SerializeSize = ArraySizeType.Int16)]
+        public string CommandArgs { get; set; }
     }
 }

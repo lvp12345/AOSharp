@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOSharp.Recast", "AOSharp.R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOSharp.Navigator", "AOSharp.Navigator\AOSharp.Navigator.csproj", "{391EA86A-D2E7-4D45-A5A4-5161796D4941}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOLite", "AOLite\AOLite.csproj", "{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,18 @@ Global
 		{391EA86A-D2E7-4D45-A5A4-5161796D4941}.Release|x64.Build.0 = Release|Any CPU
 		{391EA86A-D2E7-4D45-A5A4-5161796D4941}.Release|x86.ActiveCfg = Release|Any CPU
 		{391EA86A-D2E7-4D45-A5A4-5161796D4941}.Release|x86.Build.0 = Release|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Debug|x64.Build.0 = Debug|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Debug|x86.Build.0 = Debug|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Release|x64.Build.0 = Release|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{B2B0E643-4421-47DE-A09E-AFB576E1B2D3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

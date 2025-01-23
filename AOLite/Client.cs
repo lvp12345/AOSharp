@@ -326,42 +326,19 @@ namespace AOLite
         {
             _n3MsgCallbacks = new Dictionary<N3MessageType, Action<N3Message, byte[]>>();
 
-            _n3MsgCallbacks.Add(N3MessageType.PlayfieldAnarchyF, (msg, raw) =>
-            {
-                N3Interface.ProcessMessage(raw);
-            });
+            _n3MsgCallbacks.Add(N3MessageType.PlayfieldAnarchyF, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.SimpleCharFullUpdate, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.Despawn, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.FollowTarget, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.CharInPlay, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.SetStat, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.SetPos, (msg, raw) => N3Interface.ProcessMessage(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => N3Interface.ProcessMessage(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => N3Interface.ProcessMessage(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.Attack, (msg, raw) => N3Interface.ProcessMessage(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.StopFight, (msg, raw) => N3Interface.ProcessMessage(raw));
 
-            _n3MsgCallbacks.Add(N3MessageType.SimpleCharFullUpdate, (msg, raw) =>
-            {
-                N3Interface.ProcessMessage(raw);
-            });
-
-            _n3MsgCallbacks.Add(N3MessageType.Despawn, (msg, raw) =>
-            {
-                N3Interface.ProcessMessage(raw);
-            });
-
-            _n3MsgCallbacks.Add(N3MessageType.FollowTarget, (msg, raw) =>
-            {
-                N3Interface.ProcessMessage(raw);
-            });
-
-            _n3MsgCallbacks.Add(N3MessageType.CharInPlay, (msg, raw) =>
-            {
-                N3Interface.ProcessMessage(raw);
-            });
-
-            _n3MsgCallbacks.Add(N3MessageType.SetStat, (msg, raw) =>
-            {
-                N3Interface.ProcessMessage(raw);
-            });
-
-            _n3MsgCallbacks.Add(N3MessageType.SetPos, (msg, raw) =>
-            {
-                N3Interface.ProcessMessage(raw);
-            });
-
-            _n3MsgCallbacks.Add(N3MessageType.CharDCMove, (msg, raw) =>
+            _n3MsgCallbacks.Add(N3MessageType.CharDCMove, (msg, raw) => 
             {
                 CharDCMoveMessage moveMsg = (CharDCMoveMessage)msg;
 

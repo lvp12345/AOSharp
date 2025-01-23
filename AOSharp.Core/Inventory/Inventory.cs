@@ -17,6 +17,8 @@ namespace AOSharp.Core.Inventory
 
         public static List<Backpack> Backpacks => Items.Where(x => x.UniqueIdentity.Type == IdentityType.Container).Select(x => new Backpack(x.UniqueIdentity, x.Slot)).ToList();
 
+        public static bool IsFull => NumFreeSlots == 0;
+
         public static int NumFreeSlots => N3EngineClientAnarchy.GetNumberOfFreeInventorySlots();
 
         public static EventHandler<Container> ContainerOpened;

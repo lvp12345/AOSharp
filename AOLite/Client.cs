@@ -79,6 +79,7 @@ namespace AOLite
 
         private static Dictionary<SystemMessageType, Action<SystemMessage>> _sysMsgCallbacks;
         private static Dictionary<N3MessageType, Action<N3Message, byte[]>> _n3MsgCallbacks;
+        private static List<CharacterActionType> _allowedCharacterActionTypes;
 
         private static string _localPath;
 
@@ -324,6 +325,11 @@ namespace AOLite
 
         private static void RegisterN3MessageHandlers()
         {
+            _allowedCharacterActionTypes = new List<CharacterActionType>
+            {
+                CharacterActionType.TeamRequest
+            };
+
             _n3MsgCallbacks = new Dictionary<N3MessageType, Action<N3Message, byte[]>>();
 
             _n3MsgCallbacks.Add(N3MessageType.PlayfieldAnarchyF, (msg, raw) => N3Interface.ProcessMessage(raw));
@@ -333,10 +339,21 @@ namespace AOLite
             _n3MsgCallbacks.Add(N3MessageType.CharInPlay, (msg, raw) => N3Interface.ProcessMessage(raw));
             _n3MsgCallbacks.Add(N3MessageType.SetStat, (msg, raw) => N3Interface.ProcessMessage(raw));
             _n3MsgCallbacks.Add(N3MessageType.SetPos, (msg, raw) => N3Interface.ProcessMessage(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => N3Interface.ProcessMessage(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => N3Interface.ProcessMessage(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.Attack, (msg, raw) => N3Interface.ProcessMessage(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.StopFight, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.Attack, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.StopFight, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.TeamInvite, (msg, raw) => N3Interface.ProcessMessage(raw));
+
+            _n3MsgCallbacks.Add(N3MessageType.CharacterAction, (msg, raw) =>
+            {
+                CharacterActionMessage charActionMessage = (CharacterActionMessage)msg;
+
+                //if (!_allowedCharacterActionTypes.Contains(charActionMessage.Action))
+                //    return;
+
+                N3Interface.ProcessMessage(raw);
+            });
 
             _n3MsgCallbacks.Add(N3MessageType.CharDCMove, (msg, raw) => 
             {

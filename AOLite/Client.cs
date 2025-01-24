@@ -79,7 +79,7 @@ namespace AOLite
 
         private static Dictionary<SystemMessageType, Action<SystemMessage>> _sysMsgCallbacks;
         private static Dictionary<N3MessageType, Action<N3Message, byte[]>> _n3MsgCallbacks;
-        private static List<CharacterActionType> _allowedCharacterActionTypes;
+        private static List<CharacterActionType> _whitelistedCharacterActionTypes;
 
         private static string _localPath;
 
@@ -335,6 +335,13 @@ namespace AOLite
 
         private static void RegisterN3MessageHandlers()
         {
+            _whitelistedCharacterActionTypes = new List<CharacterActionType>()
+            {
+                CharacterActionType.TeamRequestInvite,
+                CharacterActionType.TeamMemberLeft,
+                CharacterActionType.TeamKickMember
+            };
+
             _n3MsgCallbacks = new Dictionary<N3MessageType, Action<N3Message, byte[]>>();
 
             _n3MsgCallbacks.Add(N3MessageType.PlayfieldAnarchyF, (msg, raw) => N3Interface.ProcessMessage(raw));
@@ -344,10 +351,17 @@ namespace AOLite
             _n3MsgCallbacks.Add(N3MessageType.CharInPlay, (msg, raw) => N3Interface.ProcessMessage(raw));
             _n3MsgCallbacks.Add(N3MessageType.SetStat, (msg, raw) => N3Interface.ProcessMessage(raw));
             _n3MsgCallbacks.Add(N3MessageType.SetPos, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.TeamMember, (msg, raw) => N3Interface.ProcessMessage(raw));
+
+            //Untested
             _n3MsgCallbacks.Add(N3MessageType.Attack, (msg, raw) => N3Interface.ProcessMessage(raw));
             _n3MsgCallbacks.Add(N3MessageType.StopFight, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => N3Interface.ProcessMessage(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => N3Interface.ProcessMessage(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => N3Interface.ProcessMessage(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.Stat, (msg, raw) => N3Interface.ProcessMessage(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.Buff, (msg, raw) => N3Interface.ProcessMessage(raw)); //Broken
+            //_n3MsgCallbacks.Add(N3MessageType.TeamMemberInfo, (msg, raw) => N3Interface.ProcessMessage(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.CastNanoSpell, (msg, raw) => N3Interface.ProcessMessage(raw));
 
             _n3MsgCallbacks.Add(N3MessageType.TeamInvite, (msg, raw) =>
             {
@@ -361,8 +375,8 @@ namespace AOLite
             {
                 CharacterActionMessage charActionMessage = (CharacterActionMessage)msg;
 
-                //if (!_allowedCharacterActionTypes.Contains(charActionMessage.Action))
-                //    return;
+                if (!_whitelistedCharacterActionTypes.Contains(charActionMessage.Action))
+                    return;
 
                 if (charActionMessage.Action == CharacterActionType.TeamRequestInvite)
                 {

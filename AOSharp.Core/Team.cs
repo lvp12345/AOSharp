@@ -106,22 +106,26 @@ namespace AOSharp.Core
 
         private static bool GetIsTeamLeader()
         {
-            IntPtr pTeamViewModule = TeamViewModule_c.GetInstanceIfAny();
+            IntPtr pEngine = N3Engine_t.GetInstance();
 
-            if (pTeamViewModule == IntPtr.Zero)
+            if (pEngine == IntPtr.Zero)
                 return false;
 
-            return TeamViewModule_c.IsTeamLeader(pTeamViewModule) == 1;
+            Identity identity = DynelManager.LocalPlayer.Identity;
+
+            return N3EngineClientAnarchy_t.IsTeamLeader(pEngine, ref identity);
         }
 
         private static bool GetIsInTeam()
         {
-            IntPtr pTeamViewModule = TeamViewModule_c.GetInstanceIfAny();
+            IntPtr pEngine = N3Engine_t.GetInstance();
 
-            if (pTeamViewModule == IntPtr.Zero)
+            if (pEngine == IntPtr.Zero)
                 return false;
 
-            return TeamViewModule_c.IsInTeam(pTeamViewModule) == 1;
+            Identity identity = DynelManager.LocalPlayer.Identity;
+
+            return N3EngineClientAnarchy_t.IsInTeam(pEngine, ref identity);
         }
 
         private static bool GetIsRaid()

@@ -167,6 +167,14 @@ namespace AOSharp.Common.Unmanaged.Imports
         [DllImport("Gamecode.dll", EntryPoint = "?N3Msg_IsInRaidTeam@n3EngineClientAnarchy_t@@QAE_NXZ", CallingConvention = CallingConvention.ThisCall)]
         public static extern bool IsInRaidTeam(IntPtr pThis);
 
+        [return: MarshalAs(UnmanagedType.U1)]
+        [DllImport("Gamecode.dll", EntryPoint = "?N3Msg_IsInTeam@n3EngineClientAnarchy_t@@QBE_NABVIdentity_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
+        public static extern bool IsInTeam(IntPtr pThis, ref Identity identity);
+
+        [return: MarshalAs(UnmanagedType.U1)]
+        [DllImport("Gamecode.dll", EntryPoint = "?N3Msg_IsTeamLeader@n3EngineClientAnarchy_t@@QBE_NABVIdentity_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
+        public static extern bool IsTeamLeader(IntPtr pThis, ref Identity identity);
+
         //GetTeamMemberList
         [DllImport("Gamecode.dll", EntryPoint = "?N3Msg_GetTeamMemberList@n3EngineClientAnarchy_t@@QAEPAV?$vector@PAVTeamEntry_t@@V?$allocator@PAVTeamEntry_t@@@std@@@std@@H@Z", CallingConvention = CallingConvention.ThisCall)]
         public static extern unsafe StdObjVector* GetTeamMemberList(IntPtr pThis, int teamIndex);

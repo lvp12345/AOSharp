@@ -71,6 +71,12 @@ namespace AOSharp.Core
 
         public static unsafe void Send(byte[] payload)
         {
+            if (Game.IsAOLite)
+            {
+                Connection_t.Send(IntPtr.Zero, 0, payload.Length, payload);
+                return;
+            }
+
             IntPtr pClient = Client_t.GetInstanceIfAny();
 
             if (pClient == IntPtr.Zero)
@@ -78,7 +84,7 @@ namespace AOSharp.Core
 
             IntPtr pConnection = *(IntPtr*)(pClient + 0x84);
 
-            if (pConnection == IntPtr.Zero)
+            if (pConnection == IntPtr.Zero && !Game.IsAOLite)
                 return;
 
             Connection_t.Send(pConnection, 0, payload.Length, payload);

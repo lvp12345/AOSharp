@@ -190,6 +190,10 @@ namespace AOLite
             CreateHook("Gamecode.dll",
                         "?ToClientN3Message@n3EngineClientAnarchy_t@@UBEXABVIdentity_t@@PAVACE_Data_Block@@@Z",
                         new N3EngineClientAnarchy_t.ToClientN3MessageDelegate(N3EngineClientAnarchy_ToClientN3MessageDelegate_Hook));
+
+            CreateHook("Connection.dll",
+                        "?Send@Connection_t@@QAEHIIPBX@Z",
+                        new Connection_t.DSend(Connection_t_Send_Hook));
         }
 
         private static void CreateHook(string module, string funcName, Delegate newFunc)
@@ -202,6 +206,12 @@ namespace AOLite
             LocalHook hook = LocalHook.Create(origFunc, newFunc, null);
             hook.ThreadACL.SetInclusiveACL(new Int32[] { 0 });
             _hooks.Add(hook);
+        }
+
+        private static int Connection_t_Send_Hook(IntPtr pConnection, uint unk, int len, byte[] buf)
+        {
+            _netSession.SendDatablock(buf);
+            return 0;
         }
 
         private static unsafe void N3EngineClientAnarchy_ToClientN3MessageDelegate_Hook(IntPtr pThis, ref Identity identity, IntPtr pDataBlock)
@@ -325,11 +335,6 @@ namespace AOLite
 
         private static void RegisterN3MessageHandlers()
         {
-            _allowedCharacterActionTypes = new List<CharacterActionType>
-            {
-                CharacterActionType.TeamRequest
-            };
-
             _n3MsgCallbacks = new Dictionary<N3MessageType, Action<N3Message, byte[]>>();
 
             _n3MsgCallbacks.Add(N3MessageType.PlayfieldAnarchyF, (msg, raw) => N3Interface.ProcessMessage(raw));
@@ -343,7 +348,14 @@ namespace AOLite
             _n3MsgCallbacks.Add(N3MessageType.StopFight, (msg, raw) => N3Interface.ProcessMessage(raw));
             _n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => N3Interface.ProcessMessage(raw));
             _n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.TeamInvite, (msg, raw) => N3Interface.ProcessMessage(raw));
+
+            _n3MsgCallbacks.Add(N3MessageType.TeamInvite, (msg, raw) =>
+            {
+                TeamInviteMessage teamInviteMessage = (TeamInviteMessage)msg;
+
+                TeamRequestEventArgs teamReqArgs = new TeamRequestEventArgs(teamInviteMessage.Requestor);
+                Team.TeamRequest?.Invoke(null, teamReqArgs);
+            });
 
             _n3MsgCallbacks.Add(N3MessageType.CharacterAction, (msg, raw) =>
             {
@@ -352,7 +364,15 @@ namespace AOLite
                 //if (!_allowedCharacterActionTypes.Contains(charActionMessage.Action))
                 //    return;
 
-                N3Interface.ProcessMessage(raw);
+                if (charActionMessage.Action == CharacterActionType.TeamRequestInvite)
+                {
+                    TeamRequestEventArgs teamReqArgs = new TeamRequestEventArgs(charActionMessage.Target);
+                    Team.TeamRequest?.Invoke(null, teamReqArgs);
+                }
+                else
+                {
+                    N3Interface.ProcessMessage(raw);
+                }
             });
 
             _n3MsgCallbacks.Add(N3MessageType.CharDCMove, (msg, raw) => 

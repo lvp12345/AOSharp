@@ -71,7 +71,7 @@ namespace AOLite
         private static ResourceDatabase ResourceDatabase;
 
         internal static Logger Logger;
-        internal static bool LogDeserializationErrors = false;
+        internal static bool LogDeserializationErrors = true;
 
         private static PluginProxy _pluginProxy;
 
@@ -108,7 +108,7 @@ namespace AOLite
 
         public static void SuppressDeserializationErrors()
         {
-            LogDeserializationErrors = true;
+            LogDeserializationErrors = false;
         }
 
         internal static void CreateChatClient()

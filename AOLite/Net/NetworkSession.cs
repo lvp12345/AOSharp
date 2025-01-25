@@ -221,6 +221,8 @@ namespace AOLite.Net
                     {
                         if (_n3MsgCallbacks.TryGetValue(n3Msg.N3MessageType, out Action<N3Message, byte[]> callback))
                             callback.Invoke(n3Msg, message.RawPacket);
+                        //else
+                        //    _logger.Information($"Unregistered message: {n3Msg.N3MessageType}");
 
                         if (_internalN3MsgCallbacks.TryGetValue(n3Msg.N3MessageType, out Action<N3Message> internalCallback))
                             internalCallback.Invoke(n3Msg);

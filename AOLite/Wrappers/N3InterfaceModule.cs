@@ -8,11 +8,8 @@ namespace AOLite.Wrappers
 {
     public class N3InterfaceModule : UnmanagedClassBase
     {
-        private EngineState _engineState;
-
         public N3InterfaceModule() : base(N3InterfaceModule_t.GetInstance())
         {
-            _engineState = new EngineState();
         }
 
         public int GetCharID() => N3InterfaceModule_t.GetCharID();
@@ -21,14 +18,8 @@ namespace AOLite.Wrappers
 
         public void ProcessMessage(byte[] dataBlock)
         {
-            _engineState.AddDataBlock(dataBlock);
             IntPtr pMessage = MessageProtocol.DataBlockToMessage((uint)dataBlock.Length, dataBlock);
             N3InterfaceModule_t.ProcessMessage(Pointer, pMessage);
-        }
-
-        internal void DumpState(string localPath)
-        {
-            _engineState.SaveState(localPath);
         }
 
         public N3ClientEngine CreateN3Engine(ResourceDatabase rdb)

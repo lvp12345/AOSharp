@@ -23,6 +23,8 @@ using AOSharp.Common.Unmanaged.DataTypes;
 using CommandLine;
 using AOSharp.Core;
 using System.Runtime.ExceptionServices;
+using AOLite.Debugging;
+using System.Reflection;
 
 namespace AOLite
 {
@@ -69,6 +71,7 @@ namespace AOLite
         private static N3InterfaceModule N3Interface;
         private static N3ClientEngine Engine;
         private static ResourceDatabase ResourceDatabase;
+        private static EngineState _engineState;
 
         internal static Logger Logger;
         internal static bool LogDeserializationErrors = true;
@@ -143,6 +146,8 @@ namespace AOLite
         internal static void StartN3Engine()
         {
             Logger.Debug("Starting N3Engine");
+
+            _engineState = new EngineState();
 
             ResourceDatabase = new ResourceDatabase();
             ResourceDatabase.Open($"{Config.AOPath}\\cd_image\\data");
@@ -253,15 +258,37 @@ namespace AOLite
         {
             try
             {
+                _engineState.AddTick(deltaTime);
                 Engine.RunEngine(deltaTime);
                 _pluginProxy.Update(deltaTime);
             }
             catch(AccessViolationException e)
             {
                 Logger.Error(e.Message);
-                N3Interface.DumpState(_localPath);
+
+                DumpFinalEngineState();
+
+                string path = $"{_localPath}\\AOLiteCrash_{DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss")}.dat";
+                Console.WriteLine($"Saving engine state to {path}");
+                _engineState.SaveState(path);
+
+                Config.AutoReconnect = false;
+
                 Disconnect();
             }
+        }
+
+        private static void DumpFinalEngineState()
+        {
+            int i = 1;
+            foreach(var description in _engineState.DescribeBlock(_engineState.TickBlocks.Peek()))
+                Logger.Debug($"{i++}. {description}");
+        }
+
+        public static void SendMessageToEngine(byte[] dataBlock)
+        {
+            _engineState.AddDataBlock(dataBlock);
+            N3Interface.ProcessMessage(dataBlock);
         }
 
         internal static void SelectCharacter(int id)
@@ -344,24 +371,24 @@ namespace AOLite
 
             _n3MsgCallbacks = new Dictionary<N3MessageType, Action<N3Message, byte[]>>();
 
-            _n3MsgCallbacks.Add(N3MessageType.PlayfieldAnarchyF, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.SimpleCharFullUpdate, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.Despawn, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.FollowTarget, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.CharInPlay, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.SetStat, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.SetPos, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.TeamMember, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.PlayfieldAnarchyF, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.SimpleCharFullUpdate, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.Despawn, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.FollowTarget, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.CharInPlay, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.SetStat, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.SetPos, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.TeamMember, (msg, raw) => SendMessageToEngine(raw));
 
             //Untested
-            _n3MsgCallbacks.Add(N3MessageType.Attack, (msg, raw) => N3Interface.ProcessMessage(raw));
-            _n3MsgCallbacks.Add(N3MessageType.StopFight, (msg, raw) => N3Interface.ProcessMessage(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => N3Interface.ProcessMessage(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => N3Interface.ProcessMessage(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.Stat, (msg, raw) => N3Interface.ProcessMessage(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.Buff, (msg, raw) => N3Interface.ProcessMessage(raw)); //Broken
-            //_n3MsgCallbacks.Add(N3MessageType.TeamMemberInfo, (msg, raw) => N3Interface.ProcessMessage(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.CastNanoSpell, (msg, raw) => N3Interface.ProcessMessage(raw));
+            _n3MsgCallbacks.Add(N3MessageType.Attack, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.StopFight, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => SendMessageToEngine(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => SendMessageToEngine(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.Stat, (msg, raw) => SendMessageToEngine(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.Buff, (msg, raw) => SendMessageToEngine(raw)); //Broken
+            //_n3MsgCallbacks.Add(N3MessageType.TeamMemberInfo, (msg, raw) => SendMessageToEngine(raw));
+            //_n3MsgCallbacks.Add(N3MessageType.CastNanoSpell, (msg, raw) => SendMessageToEngine(raw));
 
             _n3MsgCallbacks.Add(N3MessageType.TeamInvite, (msg, raw) =>
             {
@@ -385,7 +412,7 @@ namespace AOLite
                 }
                 else
                 {
-                    N3Interface.ProcessMessage(raw);
+                    SendMessageToEngine(raw);
                 }
             });
 
@@ -396,12 +423,12 @@ namespace AOLite
                 if (DynelManager.LocalPlayer != null && moveMsg.Identity == DynelManager.LocalPlayer.Identity)
                     return;
 
-                N3Interface.ProcessMessage(raw);
+                SendMessageToEngine(raw);
             });
 
             _n3MsgCallbacks.Add(N3MessageType.FullCharacter, (msg, raw) =>
             {
-                N3Interface.ProcessMessage(raw);
+                SendMessageToEngine(raw);
                 TickEngine(0); //Tick Engine to allow LocalPlayer creation
 
                 Send(new CharInPlayMessage());

@@ -37,6 +37,12 @@ namespace AOLite.Wrappers
             DisableAnimUpdates();
             DisableSetMainDynel();
             DisablePlayfieldInit();
+            DisableHealthDamageEffect();
+        }
+
+        private unsafe void DisableHealthDamageEffect()
+        {
+            Patch(_gamecodeBaseAddress + 0xA0666, new byte[] { 0xE9, 0xF3, 0x00, 0x00, 0x00, 0x90 });
         }
 
         //This may or may not be slightly leaky but it only occurs on relog so it will be miniscule.
@@ -52,7 +58,6 @@ namespace AOLite.Wrappers
         {
             Patch(_gamecodeBaseAddress + 0x3CA1E, new byte[] { 0xE9, 0x9F, 0x00, 0x00, 0x00 });
         }
-
 
         private unsafe void DisableVisualDynelVehicleAnim()
         {

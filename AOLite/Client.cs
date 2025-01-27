@@ -82,11 +82,9 @@ namespace AOLite
 
         private static Dictionary<SystemMessageType, Action<SystemMessage>> _sysMsgCallbacks;
         private static Dictionary<N3MessageType, Action<N3Message, byte[]>> _n3MsgCallbacks;
-        private static List<CharacterActionType> _whitelistedCharacterActionTypes;
+        private static List<CharacterActionType> _blacklistedCharacterActionTypes;
 
         private static string _localPath;
-
-        private static List<LocalHook> _hooks = new List<LocalHook>();
 
         public static void Start(ClientConfig config, Logger logger)
         {
@@ -98,6 +96,7 @@ namespace AOLite
                 CreateChatClient();
 
             Init();
+            Run();
         }
 
         public static void Send(MessageBody msgBody) => _netSession.Send(msgBody);
@@ -133,21 +132,24 @@ namespace AOLite
             RegisterN3MessageHandlers();
 
             _pluginProxy = new PluginProxy();
+        }
+
+        internal static void Run()
+        {
+            _updateLoop = new UpdateLoop(Update);
 
             _netSession = new NetworkSession(Logger, _pluginProxy, _sysMsgCallbacks, _n3MsgCallbacks);
             _netSession.Disconnected += ShutdownN3Engine;
-
-            _updateLoop = new UpdateLoop(Update);
-            _updateLoop.Start();
-
             _netSession.Connect();
+
+            _updateLoop.Start();
         }
 
         internal static void StartN3Engine()
         {
             Logger.Debug("Starting N3Engine");
 
-            _engineState = new EngineState();
+            _engineState = new EngineState(N3Interface.GetCharID());
 
             ResourceDatabase = new ResourceDatabase();
             ResourceDatabase.Open($"{Config.AOPath}\\cd_image\\data");
@@ -192,25 +194,13 @@ namespace AOLite
 
         private static void SetupHooks()
         {
-            CreateHook("Gamecode.dll",
+            Hooker.CreateHook("Gamecode.dll",
                         "?ToClientN3Message@n3EngineClientAnarchy_t@@UBEXABVIdentity_t@@PAVACE_Data_Block@@@Z",
                         new N3EngineClientAnarchy_t.ToClientN3MessageDelegate(N3EngineClientAnarchy_ToClientN3MessageDelegate_Hook));
 
-            CreateHook("Connection.dll",
+            Hooker.CreateHook("Connection.dll",
                         "?Send@Connection_t@@QAEHIIPBX@Z",
                         new Connection_t.DSend(Connection_t_Send_Hook));
-        }
-
-        private static void CreateHook(string module, string funcName, Delegate newFunc)
-        {
-            CreateHook(LocalHook.GetProcAddress(module, funcName), newFunc);
-        }
-
-        public static void CreateHook(IntPtr origFunc, Delegate newFunc)
-        {
-            LocalHook hook = LocalHook.Create(origFunc, newFunc, null);
-            hook.ThreadACL.SetInclusiveACL(new Int32[] { 0 });
-            _hooks.Add(hook);
         }
 
         private static int Connection_t_Send_Hook(IntPtr pConnection, uint unk, int len, byte[] buf)
@@ -362,11 +352,10 @@ namespace AOLite
 
         private static void RegisterN3MessageHandlers()
         {
-            _whitelistedCharacterActionTypes = new List<CharacterActionType>()
+            _blacklistedCharacterActionTypes = new List<CharacterActionType>()
             {
-                CharacterActionType.TeamRequestInvite,
-                CharacterActionType.TeamMemberLeft,
-                CharacterActionType.TeamKickMember
+                CharacterActionType.SetNanoDuration,
+                //CharacterActionType.FinishNanoCasting,
             };
 
             _n3MsgCallbacks = new Dictionary<N3MessageType, Action<N3Message, byte[]>>();
@@ -379,16 +368,23 @@ namespace AOLite
             _n3MsgCallbacks.Add(N3MessageType.SetStat, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.SetPos, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.TeamMember, (msg, raw) => SendMessageToEngine(raw));
-
-            //Untested
             _n3MsgCallbacks.Add(N3MessageType.Attack, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.StopFight, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => SendMessageToEngine(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => SendMessageToEngine(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.Stat, (msg, raw) => SendMessageToEngine(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.Buff, (msg, raw) => SendMessageToEngine(raw)); //Broken
-            //_n3MsgCallbacks.Add(N3MessageType.TeamMemberInfo, (msg, raw) => SendMessageToEngine(raw));
-            //_n3MsgCallbacks.Add(N3MessageType.CastNanoSpell, (msg, raw) => SendMessageToEngine(raw));
+
+            //Untested
+            _n3MsgCallbacks.Add(N3MessageType.AttackInfo, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.SpecialAttackInfo, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.ReflectAttack, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.ShieldAttack, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.Absorb, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.MissedAttackInfo, (msg, raw) => SendMessageToEngine(raw));
+
+            _n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.Stat, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.Buff, (msg, raw) => SendMessageToEngine(raw)); //Broken
+            _n3MsgCallbacks.Add(N3MessageType.TeamMemberInfo, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.CastNanoSpell, (msg, raw) => SendMessageToEngine(raw));
 
             _n3MsgCallbacks.Add(N3MessageType.TeamInvite, (msg, raw) =>
             {
@@ -402,7 +398,7 @@ namespace AOLite
             {
                 CharacterActionMessage charActionMessage = (CharacterActionMessage)msg;
 
-                if (!_whitelistedCharacterActionTypes.Contains(charActionMessage.Action))
+                if (_blacklistedCharacterActionTypes.Contains(charActionMessage.Action))
                     return;
 
                 if (charActionMessage.Action == CharacterActionType.TeamRequestInvite)

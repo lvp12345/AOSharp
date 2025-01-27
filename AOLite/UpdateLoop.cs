@@ -43,7 +43,7 @@ namespace AOLite
         {
             _stopWatch = Stopwatch.StartNew();
             _cancellationToken = new CancellationTokenSource();
-            Task.Factory.StartNew(Run, _cancellationToken.Token);
+            Run();
         }
 
         public void Stop()

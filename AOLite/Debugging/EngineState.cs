@@ -1,4 +1,5 @@
 ﻿using AOSharp.Common;
+using AOSharp.Core;
 using AOSharp.Core.Debugging;
 using SmokeLounge.AOtomation.Messaging.Messages;
 using SmokeLounge.AOtomation.Messaging.Serialization;
@@ -14,16 +15,19 @@ namespace AOLite.Debugging
 {
     public class EngineState
     {
+        public int ClientControlId;
         public Stack<TickBlock> TickBlocks;
 
-        internal EngineState()
+        internal EngineState(int clientControlId)
         {
+            ClientControlId = clientControlId;
             TickBlocks = new Stack<TickBlock>();
             TickBlocks.Push(new TickBlock());
         }
 
-        private EngineState(Stack<TickBlock> tickBlocks)
+        private EngineState(int clientControlId, Stack<TickBlock> tickBlocks)
         {
+            ClientControlId = clientControlId;
             TickBlocks = tickBlocks;
         }
 
@@ -47,12 +51,14 @@ namespace AOLite.Debugging
 
         public static EngineState LoadState(string path)
         {
+            int clientControlId;
             Stack<TickBlock> tickBlocks = new Stack<TickBlock>();
 
             using (FileStream stream = new FileStream(path, FileMode.Open))
             {
                 using (BinaryReader reader = new BinaryReader(stream))
                 {
+                    clientControlId = reader.ReadInt32();
                     int numBlocks = reader.ReadInt32();
 
                     for(int i = 0; i < numBlocks; i++)
@@ -74,7 +80,7 @@ namespace AOLite.Debugging
                 }
             }
 
-            return new EngineState(tickBlocks);
+            return new EngineState(clientControlId, tickBlocks);
         }
 
         public void SaveState(string path)
@@ -83,6 +89,8 @@ namespace AOLite.Debugging
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
+                    writer.Write(ClientControlId);
+
                     writer.Write(TickBlocks.Count);
 
                     while (TickBlocks.Any())

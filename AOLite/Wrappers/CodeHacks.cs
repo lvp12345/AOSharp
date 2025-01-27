@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,9 @@ namespace AOLite.Wrappers
         public IntPtr _randy31BaseAddress;
         public IntPtr _displaySystemBaseAddress;
 
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode, SetLastError = true)]
+        public delegate int DDamageVisualOutput(IntPtr ecx, int unk1, int unk2, int unk3, int unk4, int unk5, int unk6, int unk7, int unk8);
+
         public CodeHacks()
         {
             _gamecodeBaseAddress = Kernel32.GetModuleHandle("Gamecode.dll");
@@ -26,6 +30,7 @@ namespace AOLite.Wrappers
 
         public void Install()
         {
+            DisableDynelFSM();
             DisableBrokenResourceFrees();
             DisableHaltAnim();
             DisableVisualDynelVehicleAnim();
@@ -38,6 +43,18 @@ namespace AOLite.Wrappers
             DisableSetMainDynel();
             DisablePlayfieldInit();
             DisableHealthDamageEffect();
+
+            Hooker.CreateHook(_gamecodeBaseAddress + 0x12C3E, new DDamageVisualOutput(DamageVisualOutput_Hook));
+        }
+
+        private static int DamageVisualOutput_Hook(IntPtr ecx, int unk1, int unk2, int unk3, int unk4, int unk5, int unk6, int unk7, int unk8)
+        {
+            return 1;
+        }
+
+        private unsafe void DisableDynelFSM()
+        {
+            Patch(_n3BaseAddress + 0x5437, new byte[] { 0xEB });
         }
 
         private unsafe void DisableHealthDamageEffect()

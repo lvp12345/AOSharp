@@ -354,7 +354,7 @@ namespace AOLite
         {
             _blacklistedCharacterActionTypes = new List<CharacterActionType>()
             {
-                CharacterActionType.SetNanoDuration,
+                //CharacterActionType.SetNanoDuration,
                 //CharacterActionType.FinishNanoCasting,
             };
 
@@ -371,20 +371,22 @@ namespace AOLite
             _n3MsgCallbacks.Add(N3MessageType.Attack, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.StopFight, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.HealthDamage, (msg, raw) => SendMessageToEngine(raw));
-
-            //Untested
             _n3MsgCallbacks.Add(N3MessageType.AttackInfo, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.SpecialAttackInfo, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.ReflectAttack, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.ShieldAttack, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.Absorb, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.MissedAttackInfo, (msg, raw) => SendMessageToEngine(raw));
-
             _n3MsgCallbacks.Add(N3MessageType.CharSecSpecAttack, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.Stat, (msg, raw) => SendMessageToEngine(raw));
-            _n3MsgCallbacks.Add(N3MessageType.Buff, (msg, raw) => SendMessageToEngine(raw)); //Broken
+            _n3MsgCallbacks.Add(N3MessageType.Buff, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.TeamMemberInfo, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.CastNanoSpell, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.GenericCmd, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.TemplateAction, (msg, raw) => SendMessageToEngine(raw));
+            _n3MsgCallbacks.Add(N3MessageType.AddTemplate, (msg, raw) => SendMessageToEngine(raw));
+
+            //_n3MsgCallbacks.Add(N3MessageType.WeaponItemFullUpdate, (msg, raw) => SendMessageToEngine(raw)); // Broken need to fix
 
             _n3MsgCallbacks.Add(N3MessageType.TeamInvite, (msg, raw) =>
             {

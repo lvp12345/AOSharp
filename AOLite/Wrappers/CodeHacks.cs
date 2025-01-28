@@ -18,7 +18,13 @@ namespace AOLite.Wrappers
         public IntPtr _displaySystemBaseAddress;
 
         [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode, SetLastError = true)]
-        public delegate int DDamageVisualOutput(IntPtr ecx, int unk1, int unk2, int unk3, int unk4, int unk5, int unk6, int unk7, int unk8);
+        public delegate int DDamageVisualOutput(IntPtr ecx, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9);
+
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode, SetLastError = true)]
+        public delegate byte DFloatingTextSpawner(IntPtr ecx, int a2, IntPtr a3, byte a4, int a5, int a6, int a7, int a8, int a9, int a10);
+
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode, SetLastError = true)]
+        public delegate IntPtr DCharCastFSM(IntPtr ecx);
 
         public CodeHacks()
         {
@@ -30,7 +36,6 @@ namespace AOLite.Wrappers
 
         public void Install()
         {
-            DisableDynelFSM();
             DisableBrokenResourceFrees();
             DisableHaltAnim();
             DisableVisualDynelVehicleAnim();
@@ -44,17 +49,25 @@ namespace AOLite.Wrappers
             DisablePlayfieldInit();
             DisableHealthDamageEffect();
 
+            Hooker.CreateHook(_gamecodeBaseAddress + 0x7B1E3, new DCharCastFSM(CharCastFSM_Hook));
             Hooker.CreateHook(_gamecodeBaseAddress + 0x12C3E, new DDamageVisualOutput(DamageVisualOutput_Hook));
+            Hooker.CreateHook(_gamecodeBaseAddress + 0x26D0, new DFloatingTextSpawner(FloatingTextSpawner_Hook));
         }
 
-        private static int DamageVisualOutput_Hook(IntPtr ecx, int unk1, int unk2, int unk3, int unk4, int unk5, int unk6, int unk7, int unk8)
+        private static IntPtr CharCastFSM_Hook(IntPtr ecx)
+        {
+            return ecx;
+        }
+
+
+        private static int DamageVisualOutput_Hook(IntPtr ecx, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9)
         {
             return 1;
         }
 
-        private unsafe void DisableDynelFSM()
+        private static byte FloatingTextSpawner_Hook(IntPtr ecx, int a2, IntPtr a3, byte a4, int a5, int a6, int a7, int a8, int a9, int a10)
         {
-            Patch(_n3BaseAddress + 0x5437, new byte[] { 0xEB });
+            return 1;
         }
 
         private unsafe void DisableHealthDamageEffect()

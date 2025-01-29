@@ -26,6 +26,9 @@ namespace AOLite.Wrappers
         [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode, SetLastError = true)]
         public delegate IntPtr DCharCastFSM(IntPtr ecx);
 
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode, SetLastError = true)]
+        public delegate int DSimpleItemSetMesh(IntPtr ecx);
+
         public CodeHacks()
         {
             _gamecodeBaseAddress = Kernel32.GetModuleHandle("Gamecode.dll");
@@ -36,6 +39,7 @@ namespace AOLite.Wrappers
 
         public void Install()
         {
+            //DisableSimpleItemFSMLoad();
             DisableBrokenResourceFrees();
             DisableHaltAnim();
             DisableVisualDynelVehicleAnim();
@@ -49,25 +53,20 @@ namespace AOLite.Wrappers
             DisablePlayfieldInit();
             DisableHealthDamageEffect();
 
+            Hooker.CreateHook(_gamecodeBaseAddress + 0x8746A, new DSimpleItemSetMesh(SimpleItemSetMesh_Hook));
             Hooker.CreateHook(_gamecodeBaseAddress + 0x7B1E3, new DCharCastFSM(CharCastFSM_Hook));
             Hooker.CreateHook(_gamecodeBaseAddress + 0x12C3E, new DDamageVisualOutput(DamageVisualOutput_Hook));
             Hooker.CreateHook(_gamecodeBaseAddress + 0x26D0, new DFloatingTextSpawner(FloatingTextSpawner_Hook));
         }
 
-        private static IntPtr CharCastFSM_Hook(IntPtr ecx)
-        {
-            return ecx;
-        }
+        private static int SimpleItemSetMesh_Hook(IntPtr ecx) => 1;
+        private static IntPtr CharCastFSM_Hook(IntPtr ecx) => ecx;
+        private static int DamageVisualOutput_Hook(IntPtr ecx, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9) => 1;
+        private static byte FloatingTextSpawner_Hook(IntPtr ecx, int a2, IntPtr a3, byte a4, int a5, int a6, int a7, int a8, int a9, int a10) => 1;
 
-
-        private static int DamageVisualOutput_Hook(IntPtr ecx, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9)
+        private unsafe void DisableSimpleItemFSMLoad()
         {
-            return 1;
-        }
-
-        private static byte FloatingTextSpawner_Hook(IntPtr ecx, int a2, IntPtr a3, byte a4, int a5, int a6, int a7, int a8, int a9, int a10)
-        {
-            return 1;
+            Patch(_gamecodeBaseAddress + 0xA1C3E, new byte[] { 0xEB, 0x28 });
         }
 
         private unsafe void DisableHealthDamageEffect()

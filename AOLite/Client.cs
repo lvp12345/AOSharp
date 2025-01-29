@@ -354,8 +354,7 @@ namespace AOLite
         {
             _blacklistedCharacterActionTypes = new List<CharacterActionType>()
             {
-                //CharacterActionType.SetNanoDuration,
-                //CharacterActionType.FinishNanoCasting,
+                //None at the moment.
             };
 
             _n3MsgCallbacks = new Dictionary<N3MessageType, Action<N3Message, byte[]>>();
@@ -386,7 +385,7 @@ namespace AOLite
             _n3MsgCallbacks.Add(N3MessageType.TemplateAction, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.AddTemplate, (msg, raw) => SendMessageToEngine(raw));
 
-            //_n3MsgCallbacks.Add(N3MessageType.WeaponItemFullUpdate, (msg, raw) => SendMessageToEngine(raw)); // Broken need to fix
+            _n3MsgCallbacks.Add(N3MessageType.WeaponItemFullUpdate, (msg, raw) => SendMessageToEngine(raw)); // Needs long term testing.
 
             _n3MsgCallbacks.Add(N3MessageType.TeamInvite, (msg, raw) =>
             {

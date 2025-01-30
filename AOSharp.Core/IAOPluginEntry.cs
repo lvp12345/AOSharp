@@ -26,7 +26,7 @@ namespace AOSharp.Core
         protected FileInfo GlobalSettingsFile { get; private set; }
         protected FileInfo PlayerSettingsFile { get; private set; }
         protected string PluginDirectory { get; private set; }
-        protected Logger Logger;
+        public Logger Logger;
 
 
         private string _verboseLogFormat = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {PluginName} ({CharacterName}): {Message:lj}{NewLine}{Exception}";
@@ -106,6 +106,10 @@ namespace AOSharp.Core
         public virtual void Run(string pluginDir)
         {
 
+        }
+
+        public virtual void Reset()
+        {
         }
 
         public virtual void Teardown() 

@@ -13,6 +13,8 @@ namespace AOSharp.Core
         public static Dynel Target => GetTargetDynel();
         public static SimpleChar TargetChar => GetTargetChar();
 
+        private static Identity _localTarget;
+
         public static void SelectSelf(bool packetOnly = false)
         {
             SetTarget(DynelManager.LocalPlayer);
@@ -25,7 +27,7 @@ namespace AOSharp.Core
 
         public static unsafe void SetTarget(Identity target, bool packetOnly = false)
         {
-            if (!packetOnly)
+            if (!packetOnly && !Game.IsAOLite)
             {
                 TargetingModule_t.SetTarget(ref target, false);
 
@@ -47,6 +49,9 @@ namespace AOSharp.Core
 
         private static Identity GetTargetIdentity()
         {
+            if (Game.IsAOLite)
+                return _localTarget;
+
             IntPtr pInputConfig = InputConfig_t.GetInstance();
 
             if (pInputConfig == IntPtr.Zero)

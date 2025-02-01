@@ -51,14 +51,14 @@ namespace AOSharp.Core
         {
         }
 
-        public void Attack(Dynel target, bool attackWithPets = true)
+        public void Attack(Dynel target, bool includePets = true)
         {
             if (target.GetStat(Stat.Health) == 0)
                 return;
 
             Attack(target.Identity);
 
-            if (attackWithPets && Pets.Length > 0)
+            if (includePets && Pets.Length > 0)
                 Pets.Attack(target.Identity);
         }
 
@@ -74,7 +74,7 @@ namespace AOSharp.Core
             _nextAttack = Time.NormalTime + AttackAttemptDelay;
         }
 
-        public void StopAttack()
+        public void StopAttack(bool includePets = true)
         {
             IntPtr pEngine = N3Engine_t.GetInstance();
 
@@ -83,8 +83,10 @@ namespace AOSharp.Core
 
             N3EngineClientAnarchy_t.StopAttack(pEngine);
 
-            if (Pets.Length > 0)
-                Pets.Follow();
+            if (!includePets)
+                return;
+
+            Pets.Where(x => x.Type != PetType.Heal).ToArray().Follow();
         }
 
         public void DisableXpGain(bool enabled)

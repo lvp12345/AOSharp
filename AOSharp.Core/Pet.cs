@@ -62,7 +62,8 @@ namespace AOSharp.Core
         {
             Network.Send(new PetCommandMessage()
             {
-                Command = command
+                Command = command,
+                Pets = pets
             });
         }
 

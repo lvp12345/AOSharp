@@ -32,7 +32,12 @@ namespace AOSharp.Core.UI
             try
             {
                 while (_messageQueue.TryDequeue(out (string text, ChatColor color) msg))
-                    GamecodeUnk.AppendSystemText(0, msg.text, msg.color);
+                {
+                    if (Game.IsAOLite)
+                        Console.WriteLine(msg.text);
+                    else 
+                        GamecodeUnk.AppendSystemText(0, msg.text, msg.color);
+                }
             }
             catch (Exception e)
             {

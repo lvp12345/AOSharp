@@ -236,7 +236,7 @@ namespace AOLite.Net
             }
             catch (Exception e)
             {
-                if (Client.LogDeserializationErrors)
+                if (!Client.LogDeserializationErrors)
                     return;
 
                 _logger.Error($"Failed to deserialize packet: {packet.ToHexString()}");

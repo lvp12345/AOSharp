@@ -106,6 +106,7 @@
         CharSecSpecAttack = 0x51492120,
         BankCorpse = 0x52213420,
         GenericCmd = 0x52526858,
+        ConstructBuilding = 0x53011416,
         ArriveAtBs = 0x540E3B27,
         CharDCMove = 0x54111123,
         ClientMoveItemToInventory = 0x5469373F,

@@ -58,8 +58,10 @@ namespace AOSharp.Core
 
             Attack(target.Identity);
 
-            if (includePets && Pets.Length > 0)
-                Pets.Attack(target.Identity);
+            if (!includePets)
+                return;
+
+            Pets.Where(x => x.Type != PetType.Heal).ToArray().Attack(target.Identity);
         }
 
         public void Attack(Identity target)

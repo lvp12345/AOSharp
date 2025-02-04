@@ -21,9 +21,6 @@ namespace AOLite.Wrappers
         public delegate int DDamageVisualOutput(IntPtr ecx, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9);
 
         [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode, SetLastError = true)]
-        public delegate byte DFloatingTextSpawner(IntPtr ecx, int a2, IntPtr a3, byte a4, int a5, int a6, int a7, int a8, int a9, int a10);
-
-        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode, SetLastError = true)]
         public delegate IntPtr DCharCastFSM(IntPtr ecx);
 
         [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode, SetLastError = true)]
@@ -39,12 +36,11 @@ namespace AOLite.Wrappers
 
         public void Install()
         {
-            //DisableSimpleItemFSMLoad();
             DisableBrokenResourceFrees();
             DisableHaltAnim();
             DisableVisualDynelVehicleAnim();
             DisableFlyingAnimStuff();
-            DisableDynelEffectStuff();
+            DisableFloatText();
             DisableCatmeshCreation();
             DisableDynelAnimCatMeshStuff();
             DisableRDBDynelVisualMeshCreation();
@@ -56,7 +52,6 @@ namespace AOLite.Wrappers
             Hooker.CreateHook(_gamecodeBaseAddress + 0x8746A, new DSimpleItemSetMesh(SimpleItemSetMesh_Hook));
             Hooker.CreateHook(_gamecodeBaseAddress + 0x7B1E3, new DCharCastFSM(CharCastFSM_Hook));
             Hooker.CreateHook(_gamecodeBaseAddress + 0x12C3E, new DDamageVisualOutput(DamageVisualOutput_Hook));
-            Hooker.CreateHook(_gamecodeBaseAddress + 0x26D0, new DFloatingTextSpawner(FloatingTextSpawner_Hook));
         }
 
         private static int SimpleItemSetMesh_Hook(IntPtr ecx) => 1;
@@ -103,9 +98,9 @@ namespace AOLite.Wrappers
             Patch(_gamecodeBaseAddress + 0x6DCBF, new byte[] { 0xEB });
         }
 
-        private unsafe void DisableDynelEffectStuff()
+        private unsafe void DisableFloatText()
         {
-            Patch(_gamecodeBaseAddress + 0x51C6C, new byte[] { 0xEB });
+            Patch(_gamecodeBaseAddress + 0xA7A1D, new byte[] { 0xEB, 0x42 });
         }
 
         private unsafe void DisableCatmeshCreation()
@@ -133,7 +128,7 @@ namespace AOLite.Wrappers
 
         private unsafe void DisableSetMainDynel()
         {
-            Patch(_n3BaseAddress + 0x7AB7, new byte[] { 0x89, 0x86, 0x84, 0x00, 0x00, 0x00, 0xE9, 0x10, 0x01, 0x00, 0x00 });
+            Patch(_gamecodeBaseAddress + 0x19FF3, new byte[] { 0x8B, 0x5D, 0x08, 0x89, 0x9F, 0x84, 0x00, 0x00, 0x00, 0x31, 0xDB });
         }
 
         private unsafe void DisableAnimUpdates()

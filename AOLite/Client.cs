@@ -162,6 +162,8 @@ namespace AOLite
             // Create renderer (TODO: hack this out)
             Marshal.GetDelegateForFunctionPointer<Render_t.CreateRenderDelegate>(Kernel32.GetModuleHandle("randy31.dll") + 0x24C42)();
 
+            PetWindowModule_c.GetInstance();
+
             LoadCore();
             SetupHooks();
         }
@@ -384,8 +386,7 @@ namespace AOLite
             _n3MsgCallbacks.Add(N3MessageType.GenericCmd, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.TemplateAction, (msg, raw) => SendMessageToEngine(raw));
             _n3MsgCallbacks.Add(N3MessageType.AddTemplate, (msg, raw) => SendMessageToEngine(raw));
-
-            _n3MsgCallbacks.Add(N3MessageType.WeaponItemFullUpdate, (msg, raw) => SendMessageToEngine(raw)); // Needs long term testing.
+            _n3MsgCallbacks.Add(N3MessageType.WeaponItemFullUpdate, (msg, raw) => SendMessageToEngine(raw));
 
             _n3MsgCallbacks.Add(N3MessageType.TeamInvite, (msg, raw) =>
             {

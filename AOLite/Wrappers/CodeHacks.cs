@@ -41,6 +41,7 @@ namespace AOLite.Wrappers
             DisableVisualDynelVehicleAnim();
             DisableFlyingAnimStuff();
             DisableFloatText();
+            DisablePolymorph();
             DisableCatmeshCreation();
             DisableDynelAnimCatMeshStuff();
             DisableRDBDynelVisualMeshCreation();
@@ -101,6 +102,11 @@ namespace AOLite.Wrappers
         private unsafe void DisableFloatText()
         {
             Patch(_gamecodeBaseAddress + 0xA7A1D, new byte[] { 0xEB, 0x42 });
+        }
+
+        private unsafe void DisablePolymorph()
+        {
+            Patch(_gamecodeBaseAddress + 0xA90C9, new byte[] { 0xEB, 0x4A });
         }
 
         private unsafe void DisableCatmeshCreation()

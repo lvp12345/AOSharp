@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using AOSharp.Core;
 using AOSharp.Bootstrap;
 using System.Linq.Expressions;
+using SmokeLounge.AOtomation.Messaging.Messages.N3Messages;
 
 namespace AOLite.Net
 {
@@ -236,6 +237,15 @@ namespace AOLite.Net
             }
             catch (Exception e)
             {
+                //HACK!! Our FullCharacter deserializer does not work in all cases so we will just pass an empty FullCharacterMessage back to AOLite's client.
+                if ((N3MessageType)((packet[16] << 24) + (packet[17] << 16) + (packet[18] << 8) + packet[19]) == N3MessageType.FullCharacter)
+                {
+                    FullCharacterMessage emptyFullCharacterMsg = new FullCharacterMessage();
+                    _n3MsgCallbacks[N3MessageType.FullCharacter].Invoke(emptyFullCharacterMsg, packet);
+                    _internalN3MsgCallbacks[N3MessageType.FullCharacter].Invoke(emptyFullCharacterMsg);
+                    return;
+                }
+
                 if (!Client.LogDeserializationErrors)
                     return;
 

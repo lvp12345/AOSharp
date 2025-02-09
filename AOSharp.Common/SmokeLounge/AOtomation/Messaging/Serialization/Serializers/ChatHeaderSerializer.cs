@@ -65,7 +65,7 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization.Serializers
         {
             var header = new ChatHeader();
             header.PacketType = (ChatMessageType)streamReader.ReadInt16();
-            header.Size = streamReader.ReadInt16();
+            header.Size = streamReader.ReadUInt16();
             return header;
         }
 
@@ -86,7 +86,7 @@ namespace SmokeLounge.AOtomation.Messaging.Serialization.Serializers
         {
             var header = (ChatHeader)value;
             streamWriter.WriteInt16((short)header.PacketType);
-            streamWriter.WriteInt16(header.Size);
+            streamWriter.WriteUInt16(header.Size);
         }
 
         public Expression SerializerExpression(

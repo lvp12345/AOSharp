@@ -20,7 +20,7 @@ namespace SmokeLounge.AOtomation.Messaging.Messages
 
         public ChatMessageType PacketType { get; set; }
 
-        public short Size { get; set; }
+        public ushort Size { get; set; }
 
         #endregion
     }

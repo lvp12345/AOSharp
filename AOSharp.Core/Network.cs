@@ -169,12 +169,15 @@ namespace AOSharp.Core
 
         private static void OnChatMessage(byte[] packet)
         {
-            ChatMessage msg = ChatPacketFactory.Disassemble(packet);
+            try
+            {
+                ChatMessage msg = ChatPacketFactory.Disassemble(packet);
 
-            if (msg == null)
-                return;
+                if (msg == null)
+                    return;
 
-            _inboundChatMessageQueue.Enqueue(msg);
+                _inboundChatMessageQueue.Enqueue(msg);
+            } catch { }
         }
 
         private static void OnInboundMessage(byte[] datablock)

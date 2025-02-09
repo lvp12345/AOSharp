@@ -372,6 +372,7 @@
     <Compile Include="Unmanaged\DbObjects\RDBTilemap.cs" />
     <Compile Include="Unmanaged\DbObjects\SurfaceResource.cs" />
     <Compile Include="Unmanaged\DbObjects\RDBPlayfield.cs" />
+    <Compile Include="Unmanaged\Imports\AFCM\AFCM.cs" />
     <Compile Include="Unmanaged\Imports\AFCM\DynamicID_t.cs" />
     <Compile Include="Unmanaged\Imports\Connection\Connection_t.cs" />
     <Compile Include="Unmanaged\Imports\DatabaseController\ResourceDatabase_t.cs" />

@@ -41,7 +41,7 @@ namespace AOSharp.Core
 
         public bool IsAttackPending => Time.NormalTime < _nextAttack;
 
-        public bool IsRezzing => DynelManager.LocalPlayer.GetStat(Stat.TemporarySkillReduction) > 0;
+        public bool HasResurrectionSickness => DynelManager.LocalPlayer.GetStat(Stat.TemporarySkillReduction) > 0;
 
         public bool MovementStatePermitsCasting => !IsMoving && !IsFalling && (MovementState == MovementState.Walk || MovementState == MovementState.Run || MovementState == MovementState.Rooted);
 

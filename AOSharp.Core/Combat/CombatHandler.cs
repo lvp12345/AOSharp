@@ -235,6 +235,9 @@ namespace AOSharp.Core.Combat
 
         protected virtual void PerformSpecialAttacks(SimpleChar target)
         {
+            if (DynelManager.LocalPlayer.WeaponHolder.WeaponsAreBusy)
+                return;
+
             foreach (SpecialAttack special in DynelManager.LocalPlayer.SpecialAttacks)
             {
                 if (!ShouldUseSpecialAttack(special))

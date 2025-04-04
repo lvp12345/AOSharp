@@ -66,6 +66,9 @@ namespace AOSharp.Core
 
         internal IntPtr pWeaponHolder => (IntPtr)(*(MemStruct*)Pointer).WeaponHolder;
 
+        public WeaponHolder WeaponHolder => *(*(MemStruct*)Pointer).WeaponHolder;
+
+
         public SimpleChar(IntPtr pointer) : base(pointer)
         {
         }

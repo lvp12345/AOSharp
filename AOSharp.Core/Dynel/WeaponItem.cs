@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using AOSharp.Core.GameData;
 using AOSharp.Common.Unmanaged.Imports;
 using AOSharp.Common.GameData;
+using AOSharp.Core.Inventory;
 
 namespace AOSharp.Core
 {
@@ -13,11 +14,22 @@ namespace AOSharp.Core
         public float AttackRange => GetStat(Stat.AttackRange);
         public int Ammo => GetStat(Stat.Energy);
         public int MaxAmmo => GetStat(Stat.MaxEnergy);
+        public AmmoType AmmoType => (AmmoType)GetStat(Stat.AmmoType);
 
         public readonly HashSet<SpecialAttack> SpecialAttacks;
 
         private readonly IntPtr _pWeaponHolder;
         private readonly IntPtr _pWeaponUnk;
+
+        private Dictionary<AmmoType, string> _ammoTypeToItemMap = new Dictionary<AmmoType, string>
+        {
+            { AmmoType.Energy, "Ammo: Box of Energy Weapon Ammo" },
+            { AmmoType.Bullets, "Ammo: Box of Bullets" },
+            { AmmoType.Flamethrower, "Ammo: Box of Flamethrower Ammunition" },
+            { AmmoType.ShotgunShells, "Ammo: Box of Shotgun Shells" },
+            { AmmoType.Arrows, "Ammo: Arrows" },
+            { AmmoType.Grenades, "Ammo: Box of Launcher Grenades" },
+        };
 
         internal WeaponItem(IntPtr pointer, IntPtr pWeaponHolder, IntPtr pWeaponUnk) : base(pointer)
         {
@@ -60,6 +72,18 @@ namespace AOSharp.Core
                 specials.Add(SpecialAttack.SneakAttack);
 
             return specials;
+        }
+
+        public bool Reload()
+        {
+            if (!_ammoTypeToItemMap.TryGetValue(AmmoType, out string itemName))
+                return false;
+
+            if (!Inventory.Inventory.Find(itemName, out Item ammoItem))
+                return false;
+            
+            ammoItem.UseOn(this);
+            return true;
         }
 
         public bool IsDynelInRange(Dynel target)

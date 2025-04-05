@@ -21,6 +21,17 @@ namespace AOSharp.Common.GameData
         Implant = 3
     }
 
+    public enum AmmoType
+    {
+        None = 0,
+        Energy = 1,
+        Bullets = 2,
+        Flamethrower = 3,
+        ShotgunShells = 4,
+        Arrows = 5,
+        Grenades = 6
+    }
+
     public enum SpellListType
     {
         Use = 0,

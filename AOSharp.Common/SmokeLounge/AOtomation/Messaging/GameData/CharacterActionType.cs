@@ -35,6 +35,7 @@
         ShipInvite = 0xBA,
         TrainPerk = 0xBB,
         UploadNano = 0xCC,
+        Reload = 0xD2,
         TradeskillSourceChanged = 0xDC,
         TradeskillTargetChanged = 0xDD,
         TradeskillBuildPressed = 0xDE,

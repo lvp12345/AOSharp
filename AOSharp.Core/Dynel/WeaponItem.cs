@@ -11,6 +11,8 @@ namespace AOSharp.Core
     public unsafe class WeaponItem : SimpleItem
     {
         public float AttackRange => GetStat(Stat.AttackRange);
+        public int Ammo => GetStat(Stat.Energy);
+        public int MaxAmmo => GetStat(Stat.MaxEnergy);
 
         public readonly HashSet<SpecialAttack> SpecialAttacks;
 

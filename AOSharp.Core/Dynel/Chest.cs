@@ -10,13 +10,13 @@ using AOSharp.Core.Inventory;
 
 namespace AOSharp.Core
 {
-    public class Corpse : LockableContainer
+    public class Chest : LockableContainer
     {
-        public Corpse(IntPtr pointer) : base(pointer)
+        public Chest(IntPtr pointer) : base(pointer)
         {
         }
 
-        public Corpse(Dynel dynel) : base(dynel)
+        public Chest(Dynel dynel) : base(dynel)
         {
         }
     }

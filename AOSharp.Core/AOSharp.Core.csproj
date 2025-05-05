@@ -91,6 +91,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Debugging\MessageDebugExtensions.cs" />
+    <Compile Include="Dynel\Chest.cs" />
+    <Compile Include="Dynel\LockableContainer.cs" />
     <Compile Include="Org.cs" />
     <Compile Include="Battlestation.cs" />
     <Compile Include="CharacterAction.cs" />

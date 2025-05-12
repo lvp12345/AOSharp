@@ -1,4 +1,4 @@
-﻿using AOSharp.Bootstrap.IPC;
+using AOSharp.Bootstrap.IPC;
 using AOSharp.Common.GameData;
 using AOSharp.Common.Unmanaged.DataTypes;
 using AOSharp.Common.Unmanaged.Imports;
@@ -234,6 +234,9 @@ namespace AOSharp.Bootstrap
         public unsafe int WsRecv_Hook(int socket, IntPtr buffer, int len, int flags)
         {
             int bytesRead = Ws2_32.recv(socket, buffer, len, flags);
+
+            if (bytesRead == -1)
+                return bytesRead;
 
             if (_pluginProxy != null && socket == ChatSocketListener.Socket)
             {

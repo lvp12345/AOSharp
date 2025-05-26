@@ -14,6 +14,7 @@ namespace AOSharp.Core
         public float AttackRange => GetStat(Stat.AttackRange);
         public int Ammo => GetStat(Stat.Energy);
         public int MaxAmmo => GetStat(Stat.MaxEnergy);
+        public bool UsesAmmo => !((CanFlags)GetStat(Stat.Can)).HasFlag(CanFlags.NoAmmo);
         public AmmoType AmmoType => (AmmoType)GetStat(Stat.AmmoType);
 
         public readonly HashSet<SpecialAttack> SpecialAttacks;
@@ -76,6 +77,9 @@ namespace AOSharp.Core
 
         public bool Reload()
         {
+            if (!UsesAmmo)
+                return true;
+
             if (!_ammoTypeToItemMap.TryGetValue(AmmoType, out string itemName))
                 return false;
 

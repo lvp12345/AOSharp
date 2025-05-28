@@ -125,6 +125,12 @@ namespace AOSharp
                 return;
             }
 
+            if (dataModel.DllPath.ToLower().Contains("\\obj\\"))
+            {
+                await this.ShowMessageAsync("Error", $"Invalid plugin path specified: path should not include \\obj\\. Did you mean {dataModel.DllPath.Replace("\\obj\\", "\\bin\\")}?");
+                return;
+            }
+
             //Should never happen but just in case some idiot deletes a plugin after selecting it..
             if (!File.Exists(dataModel.DllPath))
                 return;
@@ -221,6 +227,13 @@ namespace AOSharp
             PluginsDataGrid.IsEnabled = true;
         }
 
+        private void TweaksButton_Click(object sender, RoutedEventArgs e)
+        {
+            var tweaksWindow = new TweaksWindow();
+            tweaksWindow.Owner = this;
+            tweaksWindow.ShowDialog();
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName)
@@ -279,6 +292,23 @@ namespace AOSharp
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class PathIsInvalidConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string path)
+            {
+                return path.Contains(@"\obj\");
+            }
+            return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

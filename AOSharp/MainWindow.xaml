@@ -8,6 +8,16 @@
         xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
         mc:Ignorable="d"
         Title="AO#" Height="450" Width="800">
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button ToolTip="Tweaks"
+                    Click="TweaksButton_Click">
+                <TextBlock FontFamily="Segoe MDL2 Assets" 
+                           FontSize="14" 
+                           Text="&#xE713;"/>
+            </Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
     <Window.Resources>
         <ResourceDictionary>
             <Dialog:CustomDialog x:Key="AddPluginDialog"
@@ -31,6 +41,7 @@
                                              TrueValue="Visible" 
                                              FalseValue="Collapsed" />
             <local:RemovePluginConverter x:Key="RemovePluginConverter"/>
+            <local:PathIsInvalidConverter x:Key="PathIsInvalidConverter"/>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -77,6 +88,7 @@
                         Click="ShowAddPluginDialog">Add Plugin</Button>
             </Grid>
             <DataGrid Name="PluginsDataGrid"
+                      Margin="0,0,5,0"
                       ItemsSource="{Binding Path=Plugins}"
                       AutoGenerateColumns="False" 
                       CanUserAddRows="False"
@@ -119,6 +131,11 @@
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow" >
                         <Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Value.Path, Converter={StaticResource PathIsInvalidConverter}}" Value="True">
+                                <Setter Property="Foreground" Value="Red"/>
+                            </DataTrigger>
+                        </Style.Triggers>
                     </Style>
                 </DataGrid.RowStyle>
             </DataGrid>

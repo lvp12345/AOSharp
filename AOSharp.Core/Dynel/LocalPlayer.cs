@@ -190,6 +190,16 @@ namespace AOSharp.Core
             return pets.ToArray();
         }
 
+        public void SetXpGain(bool enabled)
+        {
+            Network.Send(new CharacterActionMessage
+            {
+                Action = CharacterActionType.DisableXP,
+                Parameter2 = enabled ? 5 : 21,
+                Unknown = 0,
+            });
+        }
+
         [StructLayout(LayoutKind.Explicit, Pack = 0)]
         private new struct MemStruct
         {

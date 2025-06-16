@@ -26,6 +26,8 @@ namespace SmokeLounge.AOtomation.Messaging.Messages.N3Messages
 
         Repair = 4, 
 
-        UseItemOnItem = 5
+        UseItemOnItem = 5,
+
+        UseItemOnCharacter = 32
     }
 }

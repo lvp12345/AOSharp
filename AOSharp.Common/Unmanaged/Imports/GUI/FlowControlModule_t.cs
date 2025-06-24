@@ -11,5 +11,8 @@ namespace AOSharp.Common.Unmanaged.Imports
         public delegate void DTeleportStartedMessage();
 
         public static unsafe bool* pIsTeleporting = (bool*)Kernel32.GetProcAddress(Kernel32.GetModuleHandle("GUI.dll"), "?m_isTeleporting@FlowControlModule_t@@2_NA");
+
+        [DllImport("GUI.dll", EntryPoint = "?ActivateGameClosing@FlowControlModule_t@@CAXW4QuitStatus_e@1@@Z", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ActivateGameClosing(int quitStatus);
     }
 }

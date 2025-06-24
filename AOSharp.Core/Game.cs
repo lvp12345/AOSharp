@@ -94,6 +94,16 @@ namespace AOSharp.Core
             MovementController.Instance = new MovementController();
         }
 
+        public static void Quit()
+        {
+            FlowControlModule_t.ActivateGameClosing(1);
+        }
+
+        public static void Camp()
+        {
+            FlowControlModule_t.ActivateGameClosing(2);
+        }
+
         public unsafe static T GetVtbl<T>(IntPtr objPtr, int idx) where T : Delegate
         {
             IntPtr pVtbl = *((IntPtr*)objPtr);

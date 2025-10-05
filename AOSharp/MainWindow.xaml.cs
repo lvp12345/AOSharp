@@ -66,27 +66,48 @@ namespace AOSharp
 
         public MainWindow()
         {
-            //_profiles = GetProfiles();
-            //_assemblies = GetAssemblies();
-
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.File("Log.txt", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
-
-            Config = Config.Load(Directories.ConfigFilePath);
-
-            Config.Plugins.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            try
             {
-                if(e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Remove)
-                Config.Save();
-            };
+                //_profiles = GetProfiles();
+                //_assemblies = GetAssemblies();
 
-            this.DataContext = this;
+                Log.Logger = new LoggerConfiguration()
+                    .WriteTo.File("Log.txt", rollingInterval: RollingInterval.Day)
+                    .CreateLogger();
 
-            InitializeComponent();
+                Log.Information("MainWindow constructor started");
 
-            PluginsDataGrid.DataContext = Config;
-            ProfileListBox.DataContext = new ProfilesModel(Config);
+                Config = Config.Load(Directories.ConfigFilePath);
+
+                Config.Plugins.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+                {
+                    try
+                    {
+                        if(e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Remove)
+                            Config.Save();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Error in Plugins.CollectionChanged event handler");
+                        CrashLogger.LogException(ex, "Plugins.CollectionChanged");
+                    }
+                };
+
+                this.DataContext = this;
+
+                InitializeComponent();
+
+                PluginsDataGrid.DataContext = Config;
+                ProfileListBox.DataContext = new ProfilesModel(Config);
+
+                Log.Information("MainWindow constructor completed successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Critical error in MainWindow constructor");
+                CrashLogger.LogException(ex, "MainWindow Constructor");
+                throw; // Re-throw to let the crash logger handle it
+            }
         }
 
         private async void ShowAddPluginDialog(object sender, RoutedEventArgs e)
@@ -116,35 +137,56 @@ namespace AOSharp
 
         private async void AddPluginButton_Click(object sender, RoutedEventArgs e)
         {
-            BaseMetroDialog addPluginDialog = (BaseMetroDialog)this.Resources["AddPluginDialog"];
-            AddAssemblyModel dataModel = (AddAssemblyModel)addPluginDialog.DataContext;
-
-            if (string.IsNullOrEmpty(dataModel.DllPath))
+            try
             {
-                await this.ShowMessageAsync("Error", "No plugin path specified.");
-                return;
+                Log.Information("AddPluginButton_Click started");
+
+                BaseMetroDialog addPluginDialog = (BaseMetroDialog)this.Resources["AddPluginDialog"];
+                AddAssemblyModel dataModel = (AddAssemblyModel)addPluginDialog.DataContext;
+
+                if (string.IsNullOrEmpty(dataModel.DllPath))
+                {
+                    Log.Warning("AddPluginButton_Click: No plugin path specified");
+                    await this.ShowMessageAsync("Error", "No plugin path specified.");
+                    return;
+                }
+
+                if (dataModel.DllPath.ToLower().Contains("\\obj\\"))
+                {
+                    Log.Warning("AddPluginButton_Click: Invalid plugin path contains \\obj\\: {DllPath}", dataModel.DllPath);
+                    await this.ShowMessageAsync("Error", $"Invalid plugin path specified: path should not include \\obj\\. Did you mean {dataModel.DllPath.Replace("\\obj\\", "\\bin\\")}?");
+                    return;
+                }
+
+                //Should never happen but just in case some idiot deletes a plugin after selecting it..
+                if (!File.Exists(dataModel.DllPath))
+                {
+                    Log.Warning("AddPluginButton_Click: Plugin file does not exist: {DllPath}", dataModel.DllPath);
+                    return;
+                }
+
+                FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(dataModel.DllPath);
+                var hash = Utils.HashFromFile(dataModel.DllPath);
+
+                Log.Information("Adding plugin: {PluginName} ({Version}) from {Path}",
+                    fileInfo.ProductName, fileInfo.FileVersion, dataModel.DllPath);
+
+                Config.Plugins.Add(hash, new PluginModel()
+                {
+                    Name = fileInfo.ProductName,
+                    Version = fileInfo.FileVersion,
+                    Path = dataModel.DllPath
+                });
+
+                await this.HideMetroDialogAsync(addPluginDialog);
+                Log.Information("AddPluginButton_Click completed successfully");
             }
-
-            if (dataModel.DllPath.ToLower().Contains("\\obj\\"))
+            catch (Exception ex)
             {
-                await this.ShowMessageAsync("Error", $"Invalid plugin path specified: path should not include \\obj\\. Did you mean {dataModel.DllPath.Replace("\\obj\\", "\\bin\\")}?");
-                return;
+                Log.Error(ex, "Error in AddPluginButton_Click");
+                CrashLogger.LogException(ex, "AddPluginButton_Click");
+                await this.ShowMessageAsync("Error", $"Failed to add plugin: {ex.Message}");
             }
-
-            //Should never happen but just in case some idiot deletes a plugin after selecting it..
-            if (!File.Exists(dataModel.DllPath))
-                return;
-
-            FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(dataModel.DllPath);
-
-            Config.Plugins.Add(Utils.HashFromFile(dataModel.DllPath), new PluginModel()
-            {
-                Name = fileInfo.ProductName,
-                Version = fileInfo.FileVersion,
-                Path = dataModel.DllPath
-            });
-
-            await this.HideMetroDialogAsync(addPluginDialog);
         }
 
         private void PluginEnabledCheckBox_Click(object sender, RoutedEventArgs e)
@@ -192,39 +234,75 @@ namespace AOSharp
 
         private async void InjectButton_Clicked(object sender, RoutedEventArgs e)
         {
-            Profile profile = (Profile)ProfileListBox.SelectedItem;
-
-            if (profile == null)
-                return;
-
-            IEnumerable<string> plugins = Config.Plugins.Where(x => profile.EnabledPlugins.Contains(x.Key)).Select(x => x.Value.Path);
-
-            if(!plugins.Any())
+            try
             {
-                await this.ShowMessageAsync("Error", "No plugins selected.");
-                return;
+                Log.Information("InjectButton_Clicked started");
+
+                Profile profile = (Profile)ProfileListBox.SelectedItem;
+
+                if (profile == null)
+                {
+                    Log.Warning("InjectButton_Clicked: No profile selected");
+                    return;
+                }
+
+                IEnumerable<string> plugins = Config.Plugins.Where(x => profile.EnabledPlugins.Contains(x.Key)).Select(x => x.Value.Path);
+
+                if(!plugins.Any())
+                {
+                    Log.Warning("InjectButton_Clicked: No plugins selected for profile {ProfileName}", profile.Name);
+                    await this.ShowMessageAsync("Error", "No plugins selected.");
+                    return;
+                }
+
+                Log.Information("Injecting {PluginCount} plugins for profile {ProfileName}: {Plugins}",
+                    plugins.Count(), profile.Name, string.Join(", ", plugins.Select(System.IO.Path.GetFileName)));
+
+                if(profile.Inject(plugins))
+                {
+                    Log.Information("Injection successful for profile {ProfileName}", profile.Name);
+                    PluginsDataGrid.IsEnabled = false;
+                }
+                else
+                {
+                    Log.Error("Injection failed for profile {ProfileName}", profile.Name);
+                    await this.ShowMessageAsync("Error", "Failed to inject.");
+                }
             }
-
-            if(profile.Inject(plugins))
+            catch (Exception ex)
             {
-                PluginsDataGrid.IsEnabled = false;
-            }
-            else
-            {
-                await this.ShowMessageAsync("Error", "Failed to inject.");
+                Log.Error(ex, "Error in InjectButton_Clicked");
+                CrashLogger.LogException(ex, "InjectButton_Clicked");
+                await this.ShowMessageAsync("Error", $"Injection failed with error: {ex.Message}");
             }
         }
 
         private void EjectButton_Clicked(object sender, RoutedEventArgs e)
         {
-            Profile profile = (Profile)ProfileListBox.SelectedItem;
+            try
+            {
+                Log.Information("EjectButton_Clicked started");
 
-            if (profile == null)
-                return;
+                Profile profile = (Profile)ProfileListBox.SelectedItem;
 
-            profile.Eject();
+                if (profile == null)
+                {
+                    Log.Warning("EjectButton_Clicked: No profile selected");
+                    return;
+                }
 
-            PluginsDataGrid.IsEnabled = true;
+                Log.Information("Ejecting profile {ProfileName}", profile.Name);
+                profile.Eject();
+
+                PluginsDataGrid.IsEnabled = true;
+                Log.Information("EjectButton_Clicked completed successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error in EjectButton_Clicked");
+                CrashLogger.LogException(ex, "EjectButton_Clicked");
+                MessageBox.Show($"Ejection failed with error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void TweaksButton_Click(object sender, RoutedEventArgs e)

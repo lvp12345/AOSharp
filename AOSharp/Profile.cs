@@ -109,8 +109,8 @@ namespace AOSharp
                 Log.Information("EasyHook.dll path: {EasyHookPath}, exists: {EasyHookExists}",
                     easyHookPath, System.IO.File.Exists(easyHookPath));
 
-                // Use original injection method - EasyHook resolves the DLL from current directory
-                RemoteHooking.Inject(Process.Id, "AOSharp.Bootstrap.dll", string.Empty, Process.Id.ToString(CultureInfo.InvariantCulture));
+                // Use full path for injection - EasyHook needs absolute paths to resolve the assembly
+                RemoteHooking.Inject(Process.Id, bootstrapPath, bootstrapPath, Process.Id.ToString(CultureInfo.InvariantCulture));
                 Log.Information("Bootstrap injection successful for process {ProcessId}", Process.Id);
 
                 IPCClient pipe = new IPCClient(Process.Id.ToString());

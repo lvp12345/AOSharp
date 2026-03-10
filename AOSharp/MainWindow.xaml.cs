@@ -100,6 +100,9 @@ namespace AOSharp
                 PluginsDataGrid.DataContext = Config;
                 ProfileListBox.DataContext = new ProfilesModel(Config);
 
+                ApplySavedSort();
+                PluginsDataGrid.Sorting += PluginsDataGrid_Sorting;
+
                 Log.Information("MainWindow constructor completed successfully");
             }
             catch (Exception ex)
@@ -126,12 +129,16 @@ namespace AOSharp
 
         private void LocalPathDialogButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog() { Filter = "DLL Files (*.dll)|*.dll" };
+            OpenFileDialog dialog = new OpenFileDialog()
+            {
+                Filter = "DLL Files (*.dll)|*.dll",
+                Multiselect = true
+            };
 
             if (dialog.ShowDialog() == true)
             {
                 BaseMetroDialog addPluginDialog = (BaseMetroDialog)this.Resources["AddPluginDialog"];
-                ((AddAssemblyModel)addPluginDialog.DataContext).DllPath = dialog.FileName;
+                ((AddAssemblyModel)addPluginDialog.DataContext).DllPaths = dialog.FileNames;
             }
         }
 
@@ -144,42 +151,68 @@ namespace AOSharp
                 BaseMetroDialog addPluginDialog = (BaseMetroDialog)this.Resources["AddPluginDialog"];
                 AddAssemblyModel dataModel = (AddAssemblyModel)addPluginDialog.DataContext;
 
-                if (string.IsNullOrEmpty(dataModel.DllPath))
+                string[] paths = dataModel.DllPaths;
+
+                if (paths == null || paths.Length == 0)
                 {
                     Log.Warning("AddPluginButton_Click: No plugin path specified");
                     await this.ShowMessageAsync("Error", "No plugin path specified.");
                     return;
                 }
 
-                if (dataModel.DllPath.ToLower().Contains("\\obj\\"))
+                int added = 0;
+                var skipped = new List<string>();
+
+                foreach (string path in paths)
                 {
-                    Log.Warning("AddPluginButton_Click: Invalid plugin path contains \\obj\\: {DllPath}", dataModel.DllPath);
-                    await this.ShowMessageAsync("Error", $"Invalid plugin path specified: path should not include \\obj\\. Did you mean {dataModel.DllPath.Replace("\\obj\\", "\\bin\\")}?");
-                    return;
+                    if (string.IsNullOrEmpty(path))
+                        continue;
+
+                    if (path.ToLower().Contains("\\obj\\"))
+                    {
+                        Log.Warning("AddPluginButton_Click: Skipping plugin with \\obj\\ path: {DllPath}", path);
+                        skipped.Add($"{System.IO.Path.GetFileName(path)}: path should not include \\obj\\");
+                        continue;
+                    }
+
+                    if (!File.Exists(path))
+                    {
+                        Log.Warning("AddPluginButton_Click: Plugin file does not exist: {DllPath}", path);
+                        skipped.Add($"{System.IO.Path.GetFileName(path)}: file not found");
+                        continue;
+                    }
+
+                    var hash = Utils.HashFromFile(path);
+
+                    if (Config.Plugins.ContainsKey(hash))
+                    {
+                        Log.Information("AddPluginButton_Click: Skipping duplicate plugin: {DllPath}", path);
+                        skipped.Add($"{System.IO.Path.GetFileName(path)}: already added");
+                        continue;
+                    }
+
+                    FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(path);
+
+                    Log.Information("Adding plugin: {PluginName} ({Version}) from {Path}",
+                        fileInfo.ProductName, fileInfo.FileVersion, path);
+
+                    Config.Plugins.Add(hash, new PluginModel()
+                    {
+                        Name = fileInfo.ProductName,
+                        Version = fileInfo.FileVersion,
+                        Path = path
+                    });
+                    added++;
                 }
 
-                //Should never happen but just in case some idiot deletes a plugin after selecting it..
-                if (!File.Exists(dataModel.DllPath))
+                if (skipped.Count > 0)
                 {
-                    Log.Warning("AddPluginButton_Click: Plugin file does not exist: {DllPath}", dataModel.DllPath);
-                    return;
+                    await this.ShowMessageAsync("Warning",
+                        $"Added {added} plugin(s). Skipped {skipped.Count}:\n{string.Join("\n", skipped)}");
                 }
-
-                FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(dataModel.DllPath);
-                var hash = Utils.HashFromFile(dataModel.DllPath);
-
-                Log.Information("Adding plugin: {PluginName} ({Version}) from {Path}",
-                    fileInfo.ProductName, fileInfo.FileVersion, dataModel.DllPath);
-
-                Config.Plugins.Add(hash, new PluginModel()
-                {
-                    Name = fileInfo.ProductName,
-                    Version = fileInfo.FileVersion,
-                    Path = dataModel.DllPath
-                });
 
                 await this.HideMetroDialogAsync(addPluginDialog);
-                Log.Information("AddPluginButton_Click completed successfully");
+                Log.Information("AddPluginButton_Click completed: {Added} added, {Skipped} skipped", added, skipped.Count);
             }
             catch (Exception ex)
             {
@@ -310,6 +343,56 @@ namespace AOSharp
             var tweaksWindow = new TweaksWindow();
             tweaksWindow.Owner = this;
             tweaksWindow.ShowDialog();
+        }
+
+        private void ApplySavedSort()
+        {
+            try
+            {
+                var direction = Config.SortDirection == "Descending"
+                    ? ListSortDirection.Descending
+                    : ListSortDirection.Ascending;
+
+                var column = PluginsDataGrid.Columns.FirstOrDefault(c =>
+                {
+                    var binding = (c as DataGridBoundColumn)?.Binding as Binding;
+                    return binding != null && binding.Path.Path == Config.SortColumn;
+                });
+
+                if (column != null)
+                {
+                    column.SortDirection = direction;
+                    PluginsDataGrid.Items.SortDescriptions.Clear();
+                    PluginsDataGrid.Items.SortDescriptions.Add(
+                        new SortDescription(Config.SortColumn, direction));
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to apply saved sort");
+            }
+        }
+
+        private void PluginsDataGrid_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            try
+            {
+                var binding = (e.Column as DataGridBoundColumn)?.Binding as Binding;
+                if (binding == null)
+                    return;
+
+                var direction = e.Column.SortDirection == ListSortDirection.Ascending
+                    ? ListSortDirection.Descending
+                    : ListSortDirection.Ascending;
+
+                Config.SortColumn = binding.Path.Path;
+                Config.SortDirection = direction == ListSortDirection.Descending ? "Descending" : "Ascending";
+                Config.Save();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to save sort preference");
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

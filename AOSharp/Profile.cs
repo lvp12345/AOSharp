@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Newtonsoft.Json;
 using AOSharp.Bootstrap.IPC;
 using EasyHook;
@@ -54,6 +55,15 @@ namespace AOSharp
 
         [JsonIgnore]
         private IPCClient _ipcClient;
+
+        [JsonIgnore]
+        private List<FileSystemWatcher> _watchers;
+
+        [JsonIgnore]
+        private Timer _reloadTimer;
+
+        [JsonIgnore]
+        private List<string> _currentPlugins;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -128,6 +138,7 @@ namespace AOSharp
                 pipe.OnDisconnected += (e) =>
                 {
                     Log.Information("IPC pipe disconnected for process {ProcessId}", Process.Id);
+                    StopWatching();
                     _ipcClient = null;
                     IsInjected = false;
                 };
@@ -135,6 +146,9 @@ namespace AOSharp
                 _ipcClient = pipe;
                 IsInjected = true;
                 Log.Information("Injection completed successfully for process {ProcessId}", Process.Id);
+
+                _currentPlugins = plugins.ToList();
+                StartWatching();
 
                 return true;
             }
@@ -162,8 +176,96 @@ namespace AOSharp
             if (_ipcClient == null)
                 return;
 
+            StopWatching();
+
             //Breaking the pipe will cause the bootstrapper to unload itself and any loaded plugins
             _ipcClient.Disconnect();
+        }
+
+        private void StartWatching()
+        {
+            StopWatching();
+
+            _watchers = new List<FileSystemWatcher>();
+            var pluginFileNames = new HashSet<string>(_currentPlugins.Select(p => Path.GetFileName(p)), StringComparer.OrdinalIgnoreCase);
+
+            var directories = _currentPlugins
+                .Select(p => Path.GetDirectoryName(p))
+                .Distinct(StringComparer.OrdinalIgnoreCase);
+
+            foreach (string dir in directories)
+            {
+                try
+                {
+                    var watcher = new FileSystemWatcher(dir, "*.dll")
+                    {
+                        NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size,
+                        EnableRaisingEvents = true
+                    };
+
+                    watcher.Changed += (s, e) =>
+                    {
+                        if (pluginFileNames.Contains(e.Name))
+                        {
+                            Log.Information("Plugin file changed: {FileName}", e.Name);
+                            DebouncedReload();
+                        }
+                    };
+
+                    _watchers.Add(watcher);
+                    Log.Information("Watching plugin directory: {Directory}", dir);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to watch directory: {Directory}", dir);
+                }
+            }
+        }
+
+        private void StopWatching()
+        {
+            if (_watchers != null)
+            {
+                foreach (var watcher in _watchers)
+                    watcher.Dispose();
+
+                _watchers.Clear();
+                _watchers = null;
+            }
+
+            if (_reloadTimer != null)
+            {
+                _reloadTimer.Dispose();
+                _reloadTimer = null;
+            }
+        }
+
+        private void DebouncedReload()
+        {
+            if (_reloadTimer == null)
+                _reloadTimer = new Timer(OnReloadTimerElapsed, null, 500, Timeout.Infinite);
+            else
+                _reloadTimer.Change(500, Timeout.Infinite);
+        }
+
+        private void OnReloadTimerElapsed(object state)
+        {
+            if (_ipcClient == null || !IsInjected)
+                return;
+
+            try
+            {
+                Log.Information("Hot-reloading {Count} plugin(s)", _currentPlugins.Count);
+                _ipcClient.Send(new LoadAssemblyMessage()
+                {
+                    Assemblies = _currentPlugins
+                });
+                Log.Information("Hot-reload message sent successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to send hot-reload message");
+            }
         }
     }
 }

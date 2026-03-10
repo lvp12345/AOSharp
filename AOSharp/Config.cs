@@ -15,6 +15,10 @@ namespace AOSharp
 
         public ObservableCollection<Profile> Profiles { get; set; }
 
+        public string SortColumn { get; set; } = "Value.Name";
+
+        public string SortDirection { get; set; } = "Ascending";
+
         protected string _path;
 
         public static Config Load(string path)

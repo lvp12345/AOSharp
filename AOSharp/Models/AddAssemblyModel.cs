@@ -9,14 +9,32 @@ namespace AOSharp.Models
 {
     public class AddAssemblyModel : INotifyPropertyChanged
     {
-        public string _dllPath;
+        private string _dllPath;
+        private string[] _dllPaths;
+
+        public string[] DllPaths
+        {
+            get { return _dllPaths; }
+            set
+            {
+                _dllPaths = value;
+                OnPropertyChanged("DllPaths");
+                OnPropertyChanged("DllPath");
+            }
+        }
 
         public string DllPath
         {
-            get { return _dllPath; }
+            get
+            {
+                if (_dllPaths != null && _dllPaths.Length > 1)
+                    return $"{_dllPaths.Length} files selected";
+                return _dllPaths?.FirstOrDefault() ?? _dllPath;
+            }
             set
             {
                 _dllPath = value;
+                _dllPaths = new[] { value };
                 OnPropertyChanged("DllPath");
             }
         }
